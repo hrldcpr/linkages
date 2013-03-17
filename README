@@ -1,0 +1,13 @@
+This software requires Numpy ( http://numpy.scipy.org )
+    and PyOpenGL ( http://pyopengl.sf.net )
+
+To run this software, use:
+    python main.py
+which will output usage information to the console.
+
+An example linkage -- the Peaucellier-Lipkin linkage -- is
+provided. To load it, use:
+    python main.py peaucellier.txt
+
+For more information, see:
+    http://mit.edu/harold/Public/linkage
