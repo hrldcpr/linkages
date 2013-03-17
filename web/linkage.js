@@ -1,10 +1,32 @@
 function Linkage() {
+    // representation of linked rigid bars
+
     // each that you can use 'this' in:
+    function computeNullspace(A, eps) { // from http://danse.us/trac/diffraction 07-06-13
+        // returns a basis for the nullspace of A
+
+        if (A.length == 0) return [];
+
+        var cols = A[0].length;
+        while (A.length < cols) { // numeric.svd needs at least as many rows as columns
+            // so we pad with zero vectors, which do nothing to the equations
+            A.push(numeric.rep([cols], 0));
+        }
+
+        eps = eps || 1e-5;
+
+        var svd = numeric.svd(A);
+        var nullspace = [];
+        for (var i in svd.V) {
+            if (svd.S[i] <= eps) // zero singular value means this row is in nullspace
+                nullspace.push(svd.V[i]);
+        }
+        return nullspace;
+    }
+
     this.each = function(list, f) {
         return _.each(list, f, this);
     };
-
-    // representation of linked rigid bars
 
     this.init = function() {
         this.clear();
@@ -106,7 +128,7 @@ function Linkage() {
         var m = 2*this.fixed.length + this.edges.length + this.angles.length;
         if (m == 0) m = 1; // still no constraint, but want a nonempty matrix
         var n = this.vertices.length;
-        var rigidity = numeric.rep([m, 2*n], 0); // zero matrix
+        var rigidity = numeric.rep([m, 2 * n], 0); // zero matrix
         var row = 0;
 
         // 2 constraints per fixed point i,
@@ -115,7 +137,7 @@ function Linkage() {
         this.each(this.fixed, function(i) {
             rigidity[row][2*i] = 1;
             rigidity[row + 1][2*i + 1] = 1;
-            row++;
+            row += 2;
         });
 
         // 1 constraint per edge (i,j),
@@ -127,10 +149,10 @@ function Linkage() {
             var v = this.vertices[e.j];
             var dx = u.x - v.x;
             var dy = u.y - v.y;
-            rigidity[row][2*i] = dx;
-            rigidity[row][2*i + 1] = dy;
-            rigidity[row][2*j] = -dx;
-            rigidity[row][2*j + 1] = -dy;
+            rigidity[row][2*e.i] = dx;
+            rigidity[row][2*e.i + 1] = dy;
+            rigidity[row][2*e.j] = -dx;
+            rigidity[row][2*e.j + 1] = -dy;
             row++;
         });
 
@@ -143,24 +165,26 @@ function Linkage() {
             var dyj = u.y - v.y;
             var dxk = u.x - w.x;
             var dyk = u.y - w.y;
-            rigidity[row][2*i] = dxj + dxk;
-            rigidity[row][2*i + 1] = dyj + dyk;
-            rigidity[row][2*j] = -dxk;
-            rigidity[row][2*j + 1] = -dyk;
-            rigidity[row][2*k] = -dxj;
-            rigidity[row][2*k + 1] = -dyj;
+            rigidity[row][2*a.i] = dxj + dxk;
+            rigidity[row][2*a.i + 1] = dyj + dyk;
+            rigidity[row][2*a.j] = -dxk;
+            rigidity[row][2*a.j + 1] = -dyk;
+            rigidity[row][2*a.k] = -dxj;
+            rigidity[row][2*a.k + 1] = -dyj;
             row++;
         });
 
         // find basis of velocities satisfying constraints:
-        var nullspace = nullspace.nullspace(rigidity); // TODO
+        var nullspace = computeNullspace(rigidity); // TODO
 
-        // reshape to list of 2D vectors:
-        var velocities = [];
-        this.each(nullspace, function(v) {
-            velocities.push(numeric.reshape(v, [n,2])); // TODO
+        // reshape to list of lists of 2D vectors:
+        return _.map(nullspace, function(row) {
+            var velocities = [];
+            for (var i = 0; i < n; i++)
+                velocities.push({x: row[2*i],
+                                 y: row[2*i + 1]});
+            return velocities;
         });
-        return velocities;
     };
 
     this.init();
@@ -169,5 +193,8 @@ function Linkage() {
 var l = new Linkage();
 l.vertices.push({x: 0, y: 0});
 l.vertices.push({x: 1, y: 0});
+l.fixed.push(1);
+l.edges.push({i: 0, j: 1});
 console.log(l.findVertex(0.8, 10));
 console.log(l.findVertex(-0.8, 10));
+console.log(l.computeRigidity());
