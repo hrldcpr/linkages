@@ -1,6 +1,8 @@
 function Linkage() {
     // representation of linked rigid bars
 
+    var num = numeric;
+
     // each that you can use 'this' in:
     this.each = function(list, f) {
         return _.each(list, f, this);
@@ -49,8 +51,7 @@ function Linkage() {
     };
 
     this.vertexDist2 = function(x, y, i) {
-        var v = this.vertices[i];
-        return numeric.norm2Squared([v.x - x, v.y - y]);
+        return num.norm2Squared(num.sub(this.vertices[i], [x, y]));
     };
 
     this.findVertex = function(x, y) {
@@ -68,23 +69,23 @@ function Linkage() {
 
     this.edgeDist2 = function(x, y, k) {
         var e = this.edges[k];
-        var u = [this.vertices[i].x, this.vertices[i].y];
-        var v = [this.vertices[j].x, this.vertices[j].y];
+        var u = this.vertices[e.i];
+        var v = this.vertices[e.j];
         var w = [x, y];
-        var uv = numeric.sub(v, u);
-        var uw = numeric.sub(w, u);
+        var uv = num.sub(v, u);
+        var uw = num.sub(w, u);
 
-        var d1 = numeric.dot(uw, uv); // project uw onto uv
+        var d1 = num.dot(uw, uv); // project uw onto uv
         if (d1 <= 0) // lies on segmentless side of u
             return this.vertexDist2(x, y, i);
 
-        var d2 = numeric.norm2Squared(uv);
+        var d2 = num.norm2Squared(uv);
         if (d1 >= d2) // lies on segmentless side of v
             return this.vertexDist2(x, y, j);
 
         // closest point is d1/d2 along uv:
-        var pw = numeric.sub(w, numeric.add(u, numeric.mul(d1 / d2, uv)));
-        return numeric.norm2Squared(pw);
+        var pw = num.sub(w, num.add(u, num.mul(d1 / d2, uv)));
+        return num.norm2Squared(pw);
     };
 
     this.findEdge = function(x, y) {
@@ -106,7 +107,7 @@ function Linkage() {
         var m = 2*this.fixed.length + this.edges.length + this.angles.length;
         if (m == 0) m = 1; // still no constraint, but want a nonempty matrix
         var n = this.vertices.length;
-        var rigidity = numeric.rep([m, 2 * n], 0); // zero matrix
+        var rigidity = num.rep([m, 2 * n], 0); // zero matrix
         var row = 0;
 
         // 2 constraints per fixed point i,
@@ -123,32 +124,25 @@ function Linkage() {
         // i.e. constrain velocities of i and j
         // to agree along their common edge:
         this.each(this.edges, function(e) {
-            var u = this.vertices[e.i];
-            var v = this.vertices[e.j];
-            var dx = u.x - v.x;
-            var dy = u.y - v.y;
-            rigidity[row][2*e.i] = dx;
-            rigidity[row][2*e.i + 1] = dy;
-            rigidity[row][2*e.j] = -dx;
-            rigidity[row][2*e.j + 1] = -dy;
+            var d = num.sub(this.vertices[e.i], this.vertices[e.j]);
+            rigidity[row][2*e.i] = d[0];
+            rigidity[row][2*e.i + 1] = d[1];
+            rigidity[row][2*e.j] = -d[0];
+            rigidity[row][2*e.j + 1] = -d[1];
             row++;
         });
 
         // 1 constraint per fixed angle:
         this.each(this.angles, function(a) {
-            var u = this.vertices[a.i];
-            var v = this.vertices[a.j];
-            var w = this.vertices[a.k];
-            var dxj = u.x - v.x;
-            var dyj = u.y - v.y;
-            var dxk = u.x - w.x;
-            var dyk = u.y - w.y;
-            rigidity[row][2*a.i] = dxj + dxk;
-            rigidity[row][2*a.i + 1] = dyj + dyk;
-            rigidity[row][2*a.j] = -dxk;
-            rigidity[row][2*a.j + 1] = -dyk;
-            rigidity[row][2*a.k] = -dxj;
-            rigidity[row][2*a.k + 1] = -dyj;
+            var dj = num.sub(this.vertices[a.i], this.vertices[a.j]);
+            var dk = num.sub(this.vertices[a.i], this.vertices[a.k]);
+            var djk = num.add(dj, dk);
+            rigidity[row][2*a.i] = djk[0];
+            rigidity[row][2*a.i + 1] = djk[1];
+            rigidity[row][2*a.j] = -dk[0];
+            rigidity[row][2*a.j + 1] = -dk[1];
+            rigidity[row][2*a.k] = -dj[0];
+            rigidity[row][2*a.k + 1] = -dj[1];
             row++;
         });
 
@@ -159,8 +153,7 @@ function Linkage() {
         return _.map(nullspace, function(row) {
             var velocities = [];
             for (var i = 0; i < n; i++)
-                velocities.push({x: row[2*i],
-                                 y: row[2*i + 1]});
+                velocities.push([row[2*i], row[2*i + 1]]);
             return velocities;
         });
     };
@@ -169,8 +162,8 @@ function Linkage() {
 }
 
 var l = new Linkage();
-l.vertices.push({x: 0, y: 0});
-l.vertices.push({x: 1, y: 0});
+l.vertices.push([0, 0]);
+l.vertices.push([1, 0]);
 l.fixed.push(1);
 l.edges.push({i: 0, j: 1});
 console.log(l.findVertex(0.8, 10));
