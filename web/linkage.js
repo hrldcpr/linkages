@@ -1,7 +1,6 @@
 function Linkage() {
     // representation of linked rigid bars
 
-    // each that you can use 'this' in:
     function computeNullspace(A, eps) { // from http://danse.us/trac/diffraction 07-06-13
         // returns a basis for the nullspace of A
 
@@ -24,6 +23,7 @@ function Linkage() {
         return nullspace;
     }
 
+    // each that you can use 'this' in:
     this.each = function(list, f) {
         return _.each(list, f, this);
     };
