@@ -1,28 +1,6 @@
 function Linkage() {
     // representation of linked rigid bars
 
-    function computeNullspace(A, eps) { // from http://danse.us/trac/diffraction 07-06-13
-        // returns a basis for the nullspace of A
-
-        if (A.length == 0) return [];
-
-        var cols = A[0].length;
-        while (A.length < cols) { // numeric.svd needs at least as many rows as columns
-            // so we pad with zero vectors, which do nothing to the equations
-            A.push(numeric.rep([cols], 0));
-        }
-
-        eps = eps || 1e-5;
-
-        var svd = numeric.svd(A);
-        var nullspace = [];
-        for (var i in svd.V) {
-            if (svd.S[i] <= eps) // zero singular value means this row is in nullspace
-                nullspace.push(svd.V[i]);
-        }
-        return nullspace;
-    }
-
     // each that you can use 'this' in:
     this.each = function(list, f) {
         return _.each(list, f, this);
