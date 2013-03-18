@@ -160,12 +160,3 @@ function Linkage() {
 
     this.init();
 }
-
-var l = new Linkage();
-l.vertices.push([0, 0]);
-l.vertices.push([1, 0]);
-l.fixed.push(1);
-l.edges.push({i: 0, j: 1});
-console.log(l.findVertex(0.8, 10));
-console.log(l.findVertex(-0.8, 10));
-console.log(l.computeRigidity());
