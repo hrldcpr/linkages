@@ -27,8 +27,10 @@ function normalized(v) {
 }
 
 function strokeLine(c, u, v) {
+    c.beginPath();
     c.moveTo(u[0], u[1]);
     c.lineTo(v[0], v[1]);
+    c.closePath();
     c.stroke();
 }
 
@@ -82,10 +84,12 @@ function display() {
 
     c.strokeStyle = colorString(0, 0.5, 0);
     _.each(tracks, function(track) {
+        c.beginPath();
         _.each(track, function(v, i) {
             if (i == 0) c.moveTo(v[0], v[1]);
             else c.lineTo(v[0], v[1]);
         });
+        c.closePath();
         c.stroke();
     });
 
@@ -94,7 +98,6 @@ function display() {
         _.each(allVelocities, function(velocities, k) {
             velocities = num.mul(VECTOR_LENGTH, velocities);
             c.strokeStyle = colorString(0, (k + 1) / n, 0);
-            console.log(c.strokeStyle);
             _.each(link.vertices, function(v, i) {
                 strokeLine(c, v, num.add(v, velocities[i]));
             });
