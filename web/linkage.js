@@ -41,6 +41,14 @@ function Linkage() {
         });
     };
 
+    this.getEdge = function(edge) {
+        for (var k in this.edges) {
+            var e = this.edges[k];
+            if (e.i == edge.i && e.j == edge.j)
+                return k;
+        }
+    };
+
     this.removeEdge = function(k0) {
         var e = this.edges.slice(k0, 1)[0];
         this.angles = $.map(this.angles, function(a) {
@@ -50,8 +58,16 @@ function Linkage() {
         });
     };
 
+    this.getAngle = function(angle) {
+        for (var k in this.angles) {
+            var a = this.angles[k];
+            if (a.i == angle.i && a.j == angle.j && a.k == angle.k)
+                return k;
+        }
+    };
+
     this.vertexDist2 = function(x, y, i) {
-        return num.norm2Squared(num.sub(this.vertices[i], [x, y]));
+        return num.norm2Squared(num.sub([x, y], this.vertices[i]));
     };
 
     this.findVertex = function(x, y) {
