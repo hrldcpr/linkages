@@ -228,6 +228,20 @@ def keyboard(key, x, y):
 			link.removeEdge(curEdge)
 			curEdge = -1
 			update()
+        elif key=='z':
+                if curEdge>=0:
+                        i,j = link.edges[curEdge]
+                        link.removeEdge(curEdge) # TODO preserve the angles
+                        curEdge = -1
+                        u = link.vertices[i]
+                        v = link.vertices[j]
+                        link.vertices.append(((u[0] + v[0]) / 2,
+                                              (u[1] + v[1]) / 2))
+                        k = len(link.vertices) - 1
+                        link.edges.append(makeEdge(i, k))
+                        link.edges.append(makeEdge(j, k))
+                        curVertex = k
+                        update()
 	elif key=='c':
 		tracks = {}
 		link.clear()
@@ -341,7 +355,9 @@ click to (de)select a vertex and middle-click (alt-click) another vertex to add 
 click to (de)select an edge and middle-click (alt-click) an adjacent edge to fix their angle
 right-click (control-click) to place or remove the attractor, which attracts the selected vertex
 press 'f' to fix the selected vertex
+press 't' to track the selected vertex
 press 'd' to delete the selected component
+press 'z' to split the selected edge at its midpoint
 press 'c' to clear everything away
 press 'l' to load from saved_linkage.txt
 press 's' to save to saved_linkage.txt
