@@ -29,15 +29,15 @@ function Linkage() {
 
         this.edges = $.map(this.edges, function(e) {
             if (e.i != i0 && e.j != i0)
-                return {i: i < i0 ? i : i-1,
-                        j: j < i0 ? j : j-1};
+                return {i: e.i < i0 ? e.i : e.i-1,
+                        j: e.j < i0 ? e.j : e.j-1};
         });
 
         this.angles = $.map(this.angles, function(a) {
             if (a.i != i0 && a.j != i0 && a.k != i0)
-                return {i: i < i0 ? i : i-1,
-                        j: j < i0 ? j : j-1,
-                        k: k < i0 ? k : k-1};
+                return {i: a.i < i0 ? a.i : a.i-1,
+                        j: a.j < i0 ? a.j : a.j-1,
+                        k: a.k < i0 ? a.k : a.k-1};
         });
     };
 
