@@ -93,11 +93,11 @@ function Linkage() {
 
         var d1 = num.dot(uw, uv); // project uw onto uv
         if (d1 <= 0) // lies on segmentless side of u
-            return this.vertexDist2(x, y, i);
+            return this.vertexDist2(x, y, e.i);
 
         var d2 = num.norm2Squared(uv);
         if (d1 >= d2) // lies on segmentless side of v
-            return this.vertexDist2(x, y, j);
+            return this.vertexDist2(x, y, e.j);
 
         // closest point is d1/d2 along uv:
         var pw = num.sub(w, num.add(u, num.mul(d1 / d2, uv)));

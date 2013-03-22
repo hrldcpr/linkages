@@ -161,7 +161,7 @@ function mouseleft(x, y) {
         display();
     }
     else {
-        link.vertices.append((x, y));
+        link.vertices.push([x, y]);
         update();
     }
 }
@@ -285,47 +285,48 @@ function keypress(key) {
 
 
 function idle() {
-    if (!attractor || curVertex === undefined || allVelocities.length == 0
-        || link.fixed.indexOf(curVertex) >= 0)
-        return;
+    if (attractor && curVertex >= 0 && allVelocities.length && link.fixed.indexOf(curVertex) < 0) {
+        var num = numeric;
+        var velocity0 = num.sub(attractor, link.vertices[curVertex]);
 
-    // if recording>=0:
-    //         screenshot('screenshot%04d.png'%recording)
-    //         recording += 1
+        if (num.norm2Squared(velocity0) < ATTRACT_DIST2) { // turn off attractor
+            attractor = undefined;
+            display();
+        }
+        else {
+            velocity0 = num.mul(VELOCITY_MAG, normalized(velocity0));
+            _.each(allVelocities, function(velocities) {
+                var velocity = velocities[curVertex];
+                var d = num.norm2Squared(velocity);
+                if (d < 1e-9) return;
 
-    var num = numeric;
-    var velocity0 = num.sub(attractor, link.vertices[curVertex]);
-    if (num.norm2Squared(velocity0) < ATTRACT_DIST2) { // turn off attractor
-        attractor = undefined;
-        display();
-        return;
+                var c = num.dot(velocity0, velocity) / d;
+                if (c < -VELOCITY_COEFF) c = -VELOCITY_COEFF;
+                if (c > VELOCITY_COEFF) c = VELOCITY_COEFF;
+
+                velocity0 = num.sub(velocity0, num.mul(c, velocity));
+
+                for (var i in link.vertices) {
+                    link.vertices[i] = num.add(link.vertices[i],
+                                               num.mul(c, velocities[i]));
+                }
+            });
+
+            _.each(tracks, function(track, i) {
+                var last = track[track.length - 1];
+                if (!last || link.vertexDist2(last[0], last[1], i) > TRACK_DIST2) {
+                    track.push(link.vertices[i]);
+
+                    if (track.length > TRACK_LENGTH)
+                        track.splice(0, track.length - TRACK_LENGTH);
+                }
+            });
+
+            update();
+        }
     }
 
-    velocity0 = num.mul(VELOCITY_MAG * normalized(velocity0));
-    _.each(allVelocities, function(velocities) {
-        var velocity = velocities[curVertex];
-        var c = numpy.dot(velocity0, velocity) / numpy.norm2Squared(velocity);
-        if (c < -VELOCITY_COEFF) c = -VELOCITY_COEFF;
-        if (c > VELOCITY_COEFF) c = VELOCITY_COEFF;
-
-        velocity0 = num.sub(velocity0, num.mul(c, velocity));
-
-        for (var i in link.vertices)
-            link.vertices[i] = num.add(link.vertices[i],
-                                       num.mul(c, velocities[i]));
-    });
-
-    _.each(tracks, function(track, i) {
-        var last = track[track.length - 1];
-        if (!last || link.vertexDist2(last[0], last[1], i) > TRACK_DIST2) {
-            track.push(link.vertices[i]);
-
-            if (track.length > TRACK_LENGTH)
-                track.splice(0, track.length - TRACK_LENGTH);
-        }
-    });
-
-    update();
+    setTimeout(idle, 10);
 }
 
 function update() {
@@ -393,11 +394,22 @@ link.edges.push({i: 0, j: 1});
 link.edges.push({i: 1, j: 2});
 
 $(function() {
-    update();
-
     $('#canvas').mouseup(function(event) {
         var offset = $(this).offset();
-        mouseleft(event.pageX - offset.left,
-                  event.pageY - offset.top);
+        var x = event.pageX - offset.left;
+        var y = event.pageY - offset.top;
+        if (event.shiftKey)
+            mouseright(x, y);
+        else if (event.altKey)
+            mousemiddle(x, y);
+        else
+            mouseleft(x, y);
     });
+
+    $(window).keypress(function(event) {
+        keypress(String.fromCharCode(event.charCode));
+    });
+
+    update();
+    idle();
 });
