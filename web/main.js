@@ -19,7 +19,7 @@ var ANGLE_DIST = 25;
 var VECTOR_LENGTH = 50;
 var PICK_DIST2 = 100;
 var ATTRACT_DIST2 = 25;
-var TRACK_LENGTH = 1024;
+var TRACK_LENGTH = 128;
 var TRACK_DIST2 = 4;
 
 function normalized(v) {
@@ -66,7 +66,7 @@ function display() {
 
     _.each(link.edges, function(e, k) {
         if (k == curEdge) c.strokeStyle = colorString(1, 0.3, 1);
-        else c.strokeStyle = colorString(1, 0.3, 0);
+        else c.strokeStyle = colorString(0, 0, 0);
         strokeLine(c, link.vertices[e.i], link.vertices[e.j]);
     });
 
@@ -81,7 +81,7 @@ function display() {
         });
     }
 
-    c.strokeStyle = colorString(0, 0.5, 0);
+    c.strokeStyle = colorString(0, 0, 0);
     _.each(tracks, function(track) {
         c.beginPath();
         _.each(track, function(v, i) {
@@ -105,7 +105,7 @@ function display() {
     _.each(link.vertices, function(v, i) {
         var b = i == curVertex ? 1 : 0;
         var r = link.fixed.indexOf(i) != -1 ? 1 : 0;
-        var g = i in tracks ? 1 : 0;
+        var g = b;
         if (i == curVertex || !(view & 2)) {
             c.fillStyle = colorString(r, g, b);
             fillPoint(c, v);
@@ -257,7 +257,7 @@ function idle() {
         var velocity0 = num.sub(attractor, link.vertices[curVertex]);
 
         if (num.norm2Squared(velocity0) < ATTRACT_DIST2) { // turn off attractor
-            attractor = undefined;
+            attractor = [Math.random()*300, Math.random()*300];
             display();
         }
         else {
@@ -318,12 +318,24 @@ function update() {
 // press 'r' to toggle motion recording to screenshot0000.png through screenshot9999.png"""
 
 
-link.vertices.push([100, 100]);
-link.vertices.push([200, 100]);
-link.vertices.push([200, 200]);
-link.fixed.push(1);
-link.edges.push({i: 0, j: 1});
-link.edges.push({i: 1, j: 2});
+link.vertices = [[200, 100],
+                 [300, 100],
+                 [300, 200],
+                 [200, 200],
+                 [100, 200],
+                 [100, 100]];
+link.edges = [makeEdge(0, 1),
+              makeEdge(1, 2),
+              makeEdge(2, 3),
+              makeEdge(3, 4),
+              makeEdge(4, 5),
+              makeEdge(5, 0)];
+link.fixed = [0];
+curVertex = 3;
+for(var i = 1; i <= 5; i++)
+    tracks[i] = [];
+attractor = [300, 300];
+view = 1;
 
 $(function() {
     $('#canvas').mouseup(function(event) {
