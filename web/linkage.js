@@ -50,7 +50,7 @@ function Linkage() {
     };
 
     this.removeEdge = function(k0) {
-        var e = this.edges.slice(k0, 1)[0];
+        var e = this.edges.splice(k0, 1)[0];
         this.angles = $.map(this.angles, function(a) {
             if ((a.i != e.i || (a.j != e.j && a.k != e.j))
                 && (a.i != e.j || (a.j != e.i && a.k != e.i)))

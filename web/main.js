@@ -65,7 +65,7 @@ function display() {
     }
 
     _.each(link.edges, function(e, k) {
-        if (k == curEdge) c.fillStyle = colorString(1, 0.3, 1);
+        if (k == curEdge) c.strokeStyle = colorString(1, 0.3, 1);
         else c.strokeStyle = colorString(1, 0.3, 0);
         strokeLine(c, link.vertices[e.i], link.vertices[e.j]);
     });
