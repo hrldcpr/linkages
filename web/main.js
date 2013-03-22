@@ -30,7 +30,6 @@ function strokeLine(c, u, v) {
     c.beginPath();
     c.moveTo(u[0], u[1]);
     c.lineTo(v[0], v[1]);
-    c.closePath();
     c.stroke();
 }
 
@@ -89,7 +88,6 @@ function display() {
             if (i == 0) c.moveTo(v[0], v[1]);
             else c.lineTo(v[0], v[1]);
         });
-        c.closePath();
         c.stroke();
     });
 
