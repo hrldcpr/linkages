@@ -251,6 +251,7 @@ function keypress(key) {
 }
 
 
+var resized = false;
 function idle() {
     if (attractor && curVertex >= 0 && allVelocities.length && link.fixed.indexOf(curVertex) < 0) {
         var num = numeric;
@@ -292,6 +293,10 @@ function idle() {
             update();
         }
     }
+    else if (resized) {
+        display();
+        resized = false;
+    }
 
     setTimeout(idle, 10);
 }
@@ -300,22 +305,6 @@ function update() {
     allVelocities = link.computeRigidity();
     display();
 }
-
-// print """usage: python main.py [<linkage-file> [<step-size=1> [<max-step=1>]]]
-// click to add vertices
-// click to (de)select a vertex and middle-click (alt-click) another vertex to add an edge
-// click to (de)select an edge and middle-click (alt-click) an adjacent edge to fix their angle
-// right-click (control-click) to place or remove the attractor, which attracts the selected vertex
-// press 'f' to fix the selected vertex
-// press 'd' to delete the selected component
-// press 'c' to clear everything away
-// press 'l' to load from saved_linkage.txt
-// press 's' to save to saved_linkage.txt
-// press 'v' to cycle through viewing options
-// press 'i' to toggle information display
-// press 'm' to maximize/minimize to/from fullscreen
-// press 'p' to print image to screenshot.png
-// press 'r' to toggle motion recording to screenshot0000.png through screenshot9999.png"""
 
 
 link.vertices.push([100, 100]);
@@ -340,6 +329,8 @@ $(function() {
 
     $(window).keypress(function(event) {
         keypress(String.fromCharCode(event.charCode));
+    }).resize(function() {
+        resized = true;
     });
 
     update();
