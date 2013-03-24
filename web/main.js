@@ -211,7 +211,7 @@ function keypress(key) {
         display();
     }
 
-    else if (key=='d') {
+    else if (key == 'd') {
         if (curVertex >= 0) {
             if (curVertex in tracks) {
                 var oldTracks = tracks;
@@ -239,19 +239,6 @@ function keypress(key) {
         update();
     }
 
-    // elif key=='l':
-    //         tracks = {}
-    //         link.clear()
-    //         link.load()
-    //         stats = (len(link.vertices), len(link.fixed), len(link.edges), len(link.angles))
-    //         print 'loaded %d vertices (%d fixed), %d edges, and %d angles'%stats
-    //         update()
-
-    // elif key=='s':
-    //         link.save()
-    //         stats = (len(link.vertices), len(link.fixed), len(link.edges), len(link.angles))
-    //         print 'saved %d vertices (%d fixed), %d edges, and %d angles'%stats
-
     else if (key == 'v') {
         view = (view + 1) % VIEWS;
         display();
@@ -261,24 +248,6 @@ function keypress(key) {
         info = (info + 1) % INFOS;
         display();
     }
-
-    // elif key=='m':
-    //         if glutGameModeGet(GLUT_GAME_MODE_ACTIVE):
-    //                 glutLeaveGameMode()
-    //                 glutPostRedisplay()
-    //         else:
-    //                 glutEnterGameMode()
-    //                 initWindow()
-    // elif key=='p':
-    //         print 'printed window to file'
-    //         screenshot()
-    // elif key=='r':
-    //         if recording>=0:
-    //                 print 'recorded %d frames'%recording
-    //                 recording = -1
-    //         else:
-    //                 print 'recording...'
-    //                 recording = 0
 }
 
 
@@ -332,33 +301,6 @@ function update() {
     display();
 }
 
-// def screenshot(path='screenshot.png',format='png'):
-//         vPort = glGetIntegerv(GL_VIEWPORT)
-//         glPixelStorei(GL_PACK_ALIGNMENT, 1)
-//         data = glReadPixelsub(0, 0, vPort[2], vPort[3], GL_RGB)
-//         image = Image.fromstring( "RGB", (vPort[2], vPort[3]), data.tostring() )
-//         image = image.transpose(Image.FLIP_TOP_BOTTOM)
-//         image.save(path,format)
-
-// def initWindow():
-//         glPointSize(VERTEX_SIZE)
-//         glLineWidth(LINE_WIDTH)
-//         glutDisplayFunc(display)
-//         glutMouseFunc(mouse)
-//         glutKeyboardFunc(keyboard)
-
-
-// def init(): #haha, definite
-//         global link, VEL_MAG, VEL_COEFF
-//         if len(sys.argv)>=2: #<linkage-file>
-//                 link.load(sys.argv[1])
-//                 update()
-//         if len(sys.argv)>=3: #<step-size>
-//                 VEL_MAG = float(sys.argv[2])
-//         if len(sys.argv)>=4: #<max-step>
-//                 VEL_COEFF = float(sys.argv[3])
-
-
 // print """usage: python main.py [<linkage-file> [<step-size=1> [<max-step=1>]]]
 // click to add vertices
 // click to (de)select a vertex and middle-click (alt-click) another vertex to add an edge
@@ -375,14 +317,6 @@ function update() {
 // press 'p' to print image to screenshot.png
 // press 'r' to toggle motion recording to screenshot0000.png through screenshot9999.png"""
 
-// glutInit(sys.argv)
-// glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB)
-// glutInitWindowSize(600, 600)
-// glutCreateWindow('linkage')
-// init()
-// initWindow()
-// glutIdleFunc(idle)
-// glutMainLoop()
 
 link.vertices.push([100, 100]);
 link.vertices.push([200, 100]);
