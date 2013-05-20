@@ -8,7 +8,14 @@ var view = 0;
 var VIEWS = 8;
 var info = 0;
 var INFOS = 2;
-var recording;
+
+function reset() {
+    allVelocities = [];
+    curVertex = undefined;
+    curEdge = undefined;
+    attractor = undefined;
+    tracks = {};
+}
 
 var VELOCITY_COEFF = 1;
 var VELOCITY_MAG = 1;
@@ -234,7 +241,7 @@ function keypress(key) {
     }
 
     else if (key == 'c') {
-        tracks = {};
+        reset();
         link.clear();
         update();
     }
@@ -250,6 +257,7 @@ function keypress(key) {
     }
 
     else if ((key - '1') in PRESETS) {
+        reset();
         link = PRESETS[key - '1'].copy();
         update();
     }
@@ -307,7 +315,10 @@ function idle() {
 }
 
 function update() {
-    allVelocities = link.computeRigidity();
+    if (link.vertices.length)
+        allVelocities = link.computeRigidity();
+    else
+        allVelocities = [];
     display();
 }
 
