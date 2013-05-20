@@ -19,6 +19,23 @@ function Linkage() {
         this.angles = []; // [(i,j,k)] fixes angle between v_iv_j and v_iv_k
     };
 
+    this.copy = function() {
+        var that = new Linkage();
+        that.vertices = _.map(this.vertices, function(v) {
+            return [v[0], v[1]];
+        });
+        that.fixed = _.map(this.fixed, function(i) {
+            return i;
+        });
+        that.edges = _.map(this.edges, function(e) {
+            return {i: e.i, j: e.j};
+        });
+        that.angles = _.map(this.angles, function(a) {
+            return {i: a.i, j: a.j, k: j.k};
+        });
+        return that;
+    };
+
     this.removeVertex = function(i0) {
         this.vertices.splice(i0, 1);
 

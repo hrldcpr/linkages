@@ -248,6 +248,11 @@ function keypress(key) {
         info = (info + 1) % INFOS;
         display();
     }
+
+    else if ((key - '1') in PRESETS) {
+        link = PRESETS[key - '1'].copy();
+        update();
+    }
 }
 
 
@@ -306,13 +311,7 @@ function update() {
     display();
 }
 
-
-link.vertices.push([100, 100]);
-link.vertices.push([200, 100]);
-link.vertices.push([200, 200]);
-link.fixed.push(1);
-link.edges.push({i: 0, j: 1});
-link.edges.push({i: 1, j: 2});
+link = PRESETS[0].copy();
 
 $(function() {
     $('#canvas').mouseup(function(event) {
