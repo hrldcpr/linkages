@@ -31,7 +31,7 @@ function Linkage() {
             return {i: e.i, j: e.j};
         });
         that.angles = _.map(this.angles, function(a) {
-            return {i: a.i, j: a.j, k: j.k};
+            return {i: a.i, j: a.j, k: a.k};
         });
         return that;
     };
