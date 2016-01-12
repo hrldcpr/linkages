@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Mechanical Linkages in Python</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="keywords" content="Python, mechanical linkages, linkages, rigidity, rigidity matrix, planar" />
+    <meta name="description" content="Simulation of Mechanical Linkages" />
+    <script type="text/javascript">
+//<!-- start Mixpanel
+var mpq=[];mpq.push(["init","5d1fc8761e63211986dc0864632f1605"]);(function(){var b,a,e,d,c;b=document.createElement("script");b.type="text/javascript";b.async=true;b.src=(document.location.protocol==="https:"?"https:":"http:")+"//api.mixpanel.com/site_media/js/api/mixpanel.js";a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(b,a);e=function(f){return function(){mpq.push([f].concat(Array.prototype.slice.call(arguments,0)))}};d=["init","track","track_links","track_forms","register","register_once","identify","name_tag","set_config"];for(c=0;c<d.length;c++){mpq[d[c]]=e(d[c])}})();
+// end Mixpanel -->
+    </script>
+    <script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-26533561-1']);
+_gaq.push(['_trackPageview']);
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+    </script>
+  </head>
+  <body>
+    <p style="background: #ddd; padding: 1em; text-align: center;"><em>Note that there is now a mostly-finished <a href="/linkages">web version</a> of this software.</em></p>
+    <div style="margin:1em; float:right; width:400px; font-style:italic; text-align:center;">
+      <div style="border:1pt solid; padding:1em;"><img src="images/peaucellier.png" width="300"/>
+	<p>A screenshot of the <a href="http://en.wikipedia.org/wiki/Peaucellier-Lipkin_linkage">Peaucellier-Lipkin linkage</a>, the first planar linkage to convert circular motion into linear motion. Invented in 1864, it was used in steam engines to convert linear piston motion into rotation.</p></div>
+      <br/>
+      <div style="border:1pt solid; padding:1em;"><img src="/Public/penrose/penrose2t-2-mirrored.gif"/>
+	<p>A Transformable Penrose Tiling. Read more about these linkages <a href="/code.html#penrose">here</a>.</p></div>
+      <br/>
+      <div style="border:1pt solid; padding:1em;"><img src="images/curve.png" width="300"/>
+	<p>A linkage from wikipedia: "Simple linkages are capable of producing complicated motion."</p></div>
+    </div>
+    <h1>Mechanical Linkages in Python</h1>
+    <p>This page provides instructions and Python source code for simulating the behavior of <a href="http://en.wikipedia.org/wiki/Linkage_(mechanical)">mechanical linkages</a> using Rigidity theory. The software was written to simulate the behavior of <a href="/code.html#penrose">transformable Penrose tilings</a>, but is general enough to simulate many planar linkages.</p>
+    <h2>Downloads</h2>
+    <p>This software requires two very useful Python libraries, <a href="http://www.numpy.org/">Numpy</a> for the linear algebra and <a href="http://pyopengl.sf.net">PyOpenGL</a> and <a href="http://www.pythonware.com/products/pil/">PIL</a> for the graphics. Once you've installed these, you can download the source code for this software and some example linkages at:</p>
+    <p><a href="linkage.tgz">linkage.tgz</a></p>
+    <p>The main program is the file <tt>main.py</tt>; when run it prints its usage to the console, which is:</p>
+    <pre>
+      usage: python main.py [&lt;linkage-file&gt; [&lt;step-size=1&gt; [&lt;max-step=1&gt;]]]
+      click to add vertices
+      click to (de)select a vertex
+      and middle-click (alt-click) another vertex to add an edge
+      click to (de)select an edge
+      and middle-click (alt-click) an adjacent edge to fix their angle
+      right-click (control-click) to place or remove the attractor,
+      which attracts the selected vertex
+      press 'f' to fix the selected vertex
+      press 'd' to delete the selected component
+      press 'c' to clear everything away
+      press 'l' to load from saved_linkage.txt
+      press 's' to save to saved_linkage.txt
+      press 'v' to cycle through viewing options
+      press 'i' to toggle information display
+      press 'm' to maximize/minimize to/from fullscreen
+      press 'p' to print image to screenshot.png
+      press 'r' to toggle motion recording
+      to screenshot0000.png through screenshot9999.png
+    </pre>
+    <p>Also see the <a href="/code.html#penrose">Transformable Penrose Tilings</a>, which include linkage files this software can load and simulate.</p>
+    <p>For example, if you download the second-order transformable Penrose linkage <a href="/Public/penrose/linkages/penrose2t.txt">penrose2t.txt</a>, you can run it with:</p>
+    <pre>python main.py penrose2t.txt 10</pre>
+    <p>(the step-size=10 is unnecessary, but makes the software use coarser numerical integration, running faster on a complex linkage like this)</p>
+    <h2>Example Usage</h2>
+    <p><strong>Left-clicking</strong> creates vertices. A single unconstrained vertex has 2 degrees of freedom in the plane, corresponding to its position. Thus there are 2 different shades of green vector emerging from the vertex, showing a basis of the space of possible velocities in the system:</p>
+    <div style="text-align:center"><img src="images/point.png" border="1"/></div>
+    <p><strong>Left-clicking on a point</strong> selects it; <strong>middle-clicking (alt-clicking) on another point</strong> connects the two points with a rigid rod. Two points connected by a rod form the simplest rigid linkage, which has 3 degrees of freedom, corresponding to its position and orientation:</p>
+    <div style="text-align:center"><img src="images/rod.png" border="1"/></div>
+    <p>Indeed, every unconstrained rigid linkage has 3 degrees of freedom since its structure is constant, so all that can be varied are its position and orientation. A triangle, for example, is rigid, and thus has only 3 degrees of freedom:</p>
+    <div style="text-align:center"><img src="images/triangle.png" border="1"/></div>
+    <p><strong>Left-clicking on an edge</strong> selects it; <strong>middle-clicking (alt-clicking) on an adjacent edge</strong> fixes the angle formed by the two edges. The fixed angle below is entirely equivalent to the triangle above, but I think of the two types of constraints as having different semantics&#8212;a rod between vertices, as above, corresponds to a physical rod, whereas a fixed angle, as below, corresponds to a rigid joint (as opposed to the default flexible joints):</p>
+    <div style="text-align:center;"><img src="images/fixed-angle.png" border="1"/></div>
+    <br clear="all"/>
+    <p><strong>Pressing <tt>f</tt></strong> fixes the position of the selected vertex. If you fix two vertices of a linkage, you remove the 'trivial' motions of translation and rotation, leaving only structural degrees of freedom. Thus a triangle with two fixed vertices has zero degrees of freedom:</p>
+    <div style="text-align:center"><img src="images/fixed-triangle.png" border="1"/></div>
+    <p>A quadrilateral with two fixed vertices, on the other hand, has one degree of freedom, and is thus a non-rigid structure. <strong>Right-clicking (control-clicking)</strong> places an 'attractor' point, which the selected vertex attempts to move toward, within the constraints of the linkage. <strong>Pressing <tt>t</tt></strong> enables tracking for the selected vertex, so that the path the vertex follows towards the attractor point will be drawn. For example, here is a quadrilateral linkage with tracking enabled for the mobile vertices, and the selected vertex moving towards the gray attractor point:</p>
+    <div style="text-align:center"><img src="images/quadrilateral.png" border="1"/></div>
+    <p>Note the single shade of green vector emerging from the two mobile vertices in the quadrilateral above. These vectors have the same magnitude and direction because the two vertices are constrained by the linkage to move along congruent circles. The two vertices of the right-angle linkage below, on the other hand, must always have perpendicular velocity directions, and the shorter rod's vertex must always have a smaller velocity magnitude, since it traverses a smaller circle:</p>
+    <div style="text-align:center"><img src="images/angle.png" border="1"/></div>
+    <h2>Rigidity Theory</h2>
+    <p>The software simulates linkages by creating a <em>rigidity matrix</em> relating the vertex velocities to one another. It then solves for the possible velocities, and when an 'attractor' point is placed, the vertices are numerically integrated along these velocities (which are continually recomputed) such that the selected vertex moves most towards the attractor.</p>
+    <p>Suppose we have a vertex with position <b><i>p</i><sub>1</sub></b>=(0,0) and another vertex at <b><i>p</i><sub>2</sub></b>=(1,0), and suppose the two vertices are connected by a rod, as pictured below:</p>
+    <div style="text-align:center"><img src="images/rigidity1.png" border="1"/></div>
+    <p>The constraint imposed by connecting two vertices with a rigid rod is that the velocities of those vertices <em>along the rod</em> must agree, since otherwise the rod would deform. Thus we want
+      <b><i>v</i><sub>1</sub></b>&#183;(<b><i>p</i><sub>2</sub></b>-<b><i>p</i><sub>1</sub></b>)=<b><i>v</i><sub>2</sub></b>&#183;(<b><i>p</i><sub>2</sub></b>-<b><i>p</i><sub>1</sub></b>),
+      which in terms of scalars is
+      (<i>p</i><sub>2x</sub>-<i>p</i><sub>1x</sub>)<i>v</i><sub>1x</sub>+(<i>p</i><sub>2y</sub>-<i>p</i><sub>1y</sub>)<i>v</i><sub>1y</sub>=(<i>p</i><sub>2x</sub>-<i>p</i><sub>1x</sub>)<i>v</i><sub>2x</sub>+(<i>p</i><sub>2y</sub>-<i>p</i><sub>1y</sub>)<i>v</i><sub>2y</sub>
+      or equivalently
+      (<i>p</i><sub>2x</sub>-<i>p</i><sub>1x</sub>)<i>v</i><sub>1x</sub>+(<i>p</i><sub>2y</sub>-<i>p</i><sub>1y</sub>)<i>v</i><sub>1y</sub>+(<i>p</i><sub>1x</sub>-<i>p</i><sub>2x</sub>)<i>v</i><sub>2x</sub>+(<i>p</i><sub>1y</sub>-<i>p</i><sub>2y</sub>)<i>v</i><sub>2y</sub>=0
+      which we can represent as the matrix equation:</p>
+    <p style="text-align:center;"><i>A</i><b><i>v</i></b>=0
+      where
+      <i>A</i>=(<i>p</i><sub>2x</sub>-<i>p</i><sub>1x</sub>, <i>p</i><sub>2y</sub>-<i>p</i><sub>1y</sub>, <i>p</i><sub>1x</sub>-<i>p</i><sub>2x</sub>, <i>p</i><sub>1y</sub>-<i>p</i><sub>2y</sub>)=(1,0,-1,0)
+      is the rigidity matrix and
+      <b><i>v</i></b>=(<i>v</i><sub>1x</sub>, <i>v</i><sub>1y</sub>, <i>v</i><sub>2x</sub>, <i>v</i><sub>2y</sub>)
+      is the vector of all the velocities.</p>
+    <p>The solution to this matrix equation is the <em>nullspace</em> of <i>A</i> (found numerically using <em>singular value decomposition</em>) which in this case is a 3-dimensional space, since both vertices can have any y-velocity, but must have equal x-velocities (lest the rod deform). The three different shades of green vectors emerging from the vertices correspond to three basis vectors of this space. One can see that the dark green basis is <b><i>v</i><sub>a</sub></b>=(0,1,0,0), i.e. the arbitrary y-velocity of vertex 1, the light-green basis is <b><i>v</i><sub>b</sub></b>=(0,0,0,1), the arbitrary y-velocity of vertex 2, and the medium-green basis is <b><i>v</i><sub>c</sub></b>=(1,0,1,0), the equal x-velocities of the two vertices.</p>
+    <p>If we fix the position of vertex 1, it adds a new constraint to the rigidity matrix. Specifically, it requires <b><i>v</i><sub>1</sub></b>=0,
+      which in terms of scalars is the two equations <i>v</i><sub>1x</sub>=<i>v</i><sub>1y</sub>=0, which we can represent by adding two rows to the rigidity matrix, resulting in the new rigidity matrix:</p>
+    <p style="text-align:center;"><i>A</i>=(1,0,-1,0; 1,0,0,0; 0,1,0,0)</p>
+    <p>This new rigidity matrix has a nullspace of dimension 1, with the one basis vector <b><i>v</i><sub>a</sub></b>=(0,0,0,1)
+      corresponding to the arbitrary y-velocity of vertex 2; all other velocities are constrained to zero:</p>
+    <div style="text-align:center"><img src="images/rigidity2.png" border="1"/></div>
+    <p>Finally, if we fix the position of vertex 2, the rigidity matrix becomes:</p>
+    <p style="text-align:center;"><i>A</i>=(1,0,-1,0; 1,0,0,0; 0,1,0,0; 0,0,1,0; 0,0,0,1)</p>
+    <p>This matrix has a nullspace of dimension zero, which means there are no nonzero velocities satisfying the constraints, so the entire system is fixed in place:</p>
+    <div style="text-align:center"><img src="images/rigidity3.png" border="1"/></div>
+    <p>Fixed angles affect the rigidity matrix in a similar way to rods, adding one row to the matrix which constrains the rotational velocities from the fixed angle to be equal.
+      For example, the rigidity matrix for the below right-angle linkage would be:</p>
+    <p style="text-align:center;"><i>A</i>=(1,0,0,0,0,0; 0,1,0,0,0,0; 1,0,-1,0,0,0; 0,1,0,0,0,-1; 0,0,0,1,1,0)</p>
+    <p>where the first two rows fix vertex 1, the third and fourth row represent the rods, and the final row represents the fixed angle, saying in this case that <i>v</i><sub>2y</sub>+<i>v</i><sub>3x</sub>=0, or equivalently <i>v</i><sub>3x</sub>=-<i>v</i><sub>2y</sub>, i.e. an upward motion of vertex 2 must be matched by a leftward motion of vertex 3:</p>
+    <div style="text-align:center"><img src="images/rigidity4.png" border="1"/></div>
+    <p>Note that the interface for this software requires adjacent rods to fix an angle, and thus fixing an angle is always equivalent to adding a third rod; mathematically, however, if we had no rods but only a fixed angle, more motion would be possible. In the above example, for instance, if there were no rods but the angle was still fixed, then vertex 2 could move freely to the left and right and similarly vertex 3 could move freely up and down, since those motions wouldn't change the angle.</p>
+    <p style="text-align:center; font-style:italic; font-weight:bold;">hrldcpr at gmail com 2007-06-15<br/>updated: 2008-12-28</p>
+
+  </body>
+</html>
