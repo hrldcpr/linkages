@@ -1,7 +1,6 @@
-This software requires Numpy ( http://numpy.scipy.org )
-    and PyOpenGL ( http://pyopengl.sf.net )
-
-To run this software, use:
+To run this software, first install the dependencies (I recommend creating a python venv first):
+    pip install -r requirements.txt
+then run:
     python main.py
 which will output usage information to the console.
 
