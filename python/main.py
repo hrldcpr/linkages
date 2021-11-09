@@ -76,7 +76,7 @@ def display():
 		x,y = link.vertices[j]
 		glVertex2d(x,y)
 	glEnd()
-	
+
 	if view&4==0:
 		glBegin(GL_LINES)
 		glColor3f(1,0.7,0)
@@ -100,7 +100,7 @@ def display():
 		for (x,y) in track:
 			glVertex2d(x,y)
 		glEnd()
-	
+
 	if view&1==0:
 		glBegin(GL_LINES)
 		nv = len(velocities)
@@ -164,9 +164,9 @@ def mouse(button, state, x, y):
 	global link, curVertex, curEdge, velocities, attractor
 	if state!=GLUT_UP: return
 
-        # alt-clicking should count as middle button, but if it doesn't... then it does:
-        if button==GLUT_LEFT_BUTTON and glutGetModifiers() & GLUT_ACTIVE_ALT:
-                button = GLUT_MIDDLE_BUTTON
+	# alt-clicking should count as middle button, but if it doesn't... then it does:
+	if button==GLUT_LEFT_BUTTON and glutGetModifiers() & GLUT_ACTIVE_ALT:
+		button = GLUT_MIDDLE_BUTTON
 
 	vPort = glGetIntegerv(GL_VIEWPORT)
 	y = vPort[3]-y
@@ -228,20 +228,20 @@ def keyboard(key, x, y):
 			link.removeEdge(curEdge)
 			curEdge = -1
 			update()
-        elif key=='z':
-                if curEdge>=0:
-                        i,j = link.edges[curEdge]
-                        link.removeEdge(curEdge) # TODO preserve the angles
-                        curEdge = -1
-                        u = link.vertices[i]
-                        v = link.vertices[j]
-                        link.vertices.append(((u[0] + v[0]) / 2,
-                                              (u[1] + v[1]) / 2))
-                        k = len(link.vertices) - 1
-                        link.edges.append(makeEdge(i, k))
-                        link.edges.append(makeEdge(j, k))
-                        curVertex = k
-                        update()
+	elif key=='z':
+		if curEdge>=0:
+			i,j = link.edges[curEdge]
+			link.removeEdge(curEdge) # TODO preserve the angles
+			curEdge = -1
+			u = link.vertices[i]
+			v = link.vertices[j]
+			link.vertices.append(((u[0] + v[0]) / 2,
+					      (u[1] + v[1]) / 2))
+			k = len(link.vertices) - 1
+			link.edges.append(makeEdge(i, k))
+			link.edges.append(makeEdge(j, k))
+			curVertex = k
+			update()
 	elif key=='c':
 		tracks = {}
 		link.clear()

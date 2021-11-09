@@ -136,7 +136,7 @@ class Linkage:
 			rigidity[row, 2*k] = -dxj
 			rigidity[row, 2*k+1] = -dyj
 			row+=1
-		
+
 		# find basis of velocities satisfying constraints:
 		null = nullspace.nullspace(rigidity)
 
@@ -144,7 +144,7 @@ class Linkage:
 		velocities = []
 		for v in null:
 			velocities.append(v.reshape((n,2)))
-		
+
 		return velocities
 
 	def load(self,path='saved_linkage.txt'):
@@ -183,31 +183,31 @@ class Linkage:
 
 	def save(self,path='saved_linkage.txt'):
 		f = file(path,'w')
-                f2 = file(path+'.js', 'w')
+		f2 = file(path+'.js', 'w')
 		print >> f, 'v'
-                print >> f2, '$.extend(new Linkage(), {'
+		print >> f2, '$.extend(new Linkage(), {'
 
 		for v in self.vertices:
 			print >> f, '%f %f'%v
-                print >> f2, 'vertices: %s,' % json.dumps(self.vertices)
+		print >> f2, 'vertices: %s,' % json.dumps(self.vertices)
 
 		print >> f, 'f'
 		for i in self.fixed:
 			print >> f, i
-                print >> f2, 'fixed: %s,' % json.dumps(self.fixed)
+		print >> f2, 'fixed: %s,' % json.dumps(self.fixed)
 
 		print >> f, 'e'
 		for e in self.edges:
 			print >> f, '%d %d'%e
-                print >> f2, 'edges: [%s],' % ',\n'.join(('{i: %d, j: %d}' % e)
-                                                         for e in self.edges)
+		print >> f2, 'edges: [%s],' % ',\n'.join(('{i: %d, j: %d}' % e)
+							 for e in self.edges)
 
 		print >> f, 'a'
 		for a in self.angles:
 			print >> f, '%d %d %d'%a
-                print >> f2, 'angles: [%s],' % ',\n'.join(('{i: %d, j: %d, k: %d}' % a)
-                                                          for a in self.angles)
+		print >> f2, 'angles: [%s],' % ',\n'.join(('{i: %d, j: %d, k: %d}' % a)
+							  for a in self.angles)
 
-                print >> f2, '}),'
-                f.close()
-                f2.close()
+		print >> f2, '}),'
+		f.close()
+		f2.close()
