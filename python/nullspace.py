@@ -6,5 +6,5 @@ def nullspace(A, eps=1.0e-5): #from http://danse.us/trac/diffraction 07-06-13
     u, s, vh = numpy.linalg.svd(A)
     # s may have smaller dimension than v:
     mask = numpy.array([True]*vh.shape[0])
-    mask[s > eps] = False
+    mask[:len(s)][s > eps] = False
     return numpy.compress(mask, vh, axis=0)
