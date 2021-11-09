@@ -43,8 +43,8 @@ class Linkage:
 
 	def removeEdge(self, k0):
 		i0,j0 = self.edges.pop(k0)
-		f = lambda (i,j,k): (i!=i0 or (j!=j0 and k!=j0)) and (i!=j0 or (j!=i0 and k!=i0))
-		self.angles = filter(f, self.angles)
+		f = lambda i_j_k: (i_j_k[0]!=i0 or (i_j_k[1]!=j0 and i_j_k[2]!=j0)) and (i_j_k[0]!=j0 or (i_j_k[1]!=i0 and i_j_k[2]!=i0))
+		self.angles = list(filter(f, self.angles))
 
 	def vertexDist2(self, x, y, i):
 		xi,yi = self.vertices[i]
@@ -162,7 +162,7 @@ class Linkage:
 				continue
 			if mode=='v':
 				try:
-					x,y = map(float,line.split())
+					x,y = list(map(float,line.split()))
 					self.vertices.append((x,y))
 				except ValueError: pass
 			elif mode=='f':
@@ -172,42 +172,42 @@ class Linkage:
 				except ValueError: pass
 			elif mode=='e':
 				try:
-					i,j = map(parseVertex,line.split())
+					i,j = list(map(parseVertex,line.split()))
 					self.edges.append((i,j))
 				except ValueError: pass
 			elif mode=='a':
 				try:
-					i,j,k = map(parseVertex,line.split())
+					i,j,k = list(map(parseVertex,line.split()))
 					self.angles.append((i,j,k))
 				except ValueError: pass
 
 	def save(self,path='saved_linkage.txt'):
 		f = file(path,'w')
 		f2 = file(path+'.js', 'w')
-		print >> f, 'v'
-		print >> f2, '$.extend(new Linkage(), {'
+		print('v', file=f)
+		print('$.extend(new Linkage(), {', file=f2)
 
 		for v in self.vertices:
-			print >> f, '%f %f'%v
-		print >> f2, 'vertices: %s,' % json.dumps(self.vertices)
+			print('%f %f'%v, file=f)
+		print('vertices: %s,' % json.dumps(self.vertices), file=f2)
 
-		print >> f, 'f'
+		print('f', file=f)
 		for i in self.fixed:
-			print >> f, i
-		print >> f2, 'fixed: %s,' % json.dumps(self.fixed)
+			print(i, file=f)
+		print('fixed: %s,' % json.dumps(self.fixed), file=f2)
 
-		print >> f, 'e'
+		print('e', file=f)
 		for e in self.edges:
-			print >> f, '%d %d'%e
-		print >> f2, 'edges: [%s],' % ',\n'.join(('{i: %d, j: %d}' % e)
-							 for e in self.edges)
+			print('%d %d'%e, file=f)
+		print('edges: [%s],' % ',\n'.join(('{i: %d, j: %d}' % e)
+							 for e in self.edges), file=f2)
 
-		print >> f, 'a'
+		print('a', file=f)
 		for a in self.angles:
-			print >> f, '%d %d %d'%a
-		print >> f2, 'angles: [%s],' % ',\n'.join(('{i: %d, j: %d, k: %d}' % a)
-							  for a in self.angles)
+			print('%d %d %d'%a, file=f)
+		print('angles: [%s],' % ',\n'.join(('{i: %d, j: %d, k: %d}' % a)
+							  for a in self.angles), file=f2)
 
-		print >> f2, '}),'
+		print('}),', file=f2)
 		f.close()
 		f2.close()

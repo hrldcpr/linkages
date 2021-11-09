@@ -95,7 +95,7 @@ def display():
 		glEnd()
 
 	glColor3f(0,0.5,0)
-	for track in tracks.values():
+	for track in list(tracks.values()):
 		glBegin(GL_LINE_STRIP)
 		for (x,y) in track:
 			glVertex2d(x,y)
@@ -251,12 +251,12 @@ def keyboard(key, x, y):
 		link.clear()
 		link.load()
 		stats = (len(link.vertices), len(link.fixed), len(link.edges), len(link.angles))
-		print 'loaded %d vertices (%d fixed), %d edges, and %d angles'%stats
+		print('loaded %d vertices (%d fixed), %d edges, and %d angles'%stats)
 		update()
 	elif key=='s':
 		link.save()
 		stats = (len(link.vertices), len(link.fixed), len(link.edges), len(link.angles))
-		print 'saved %d vertices (%d fixed), %d edges, and %d angles'%stats
+		print('saved %d vertices (%d fixed), %d edges, and %d angles'%stats)
 	elif key=='v':
 		view = (view+1)%VIEWS
 		glutPostRedisplay()
@@ -271,14 +271,14 @@ def keyboard(key, x, y):
 			glutEnterGameMode()
 			initWindow()
 	elif key=='p':
-		print 'printed window to file'
+		print('printed window to file')
 		screenshot()
 	elif key=='r':
 		if recording>=0:
-			print 'recorded %d frames'%recording
+			print('recorded %d frames'%recording)
 			recording = -1
 		else:
-			print 'recording...'
+			print('recording...')
 			recording = 0
 
 
@@ -349,7 +349,7 @@ def init(): #haha, definite
 		V_COEFF = float(sys.argv[3])
 
 
-print """usage: python main.py [<linkage-file> [<step-size=1> [<max-step=1>]]]
+print("""usage: python main.py [<linkage-file> [<step-size=1> [<max-step=1>]]]
 click to add vertices
 click to (de)select a vertex and middle-click (alt-click) another vertex to add an edge
 click to (de)select an edge and middle-click (alt-click) an adjacent edge to fix their angle
@@ -365,7 +365,7 @@ press 'v' to cycle through viewing options
 press 'i' to toggle information display
 press 'm' to maximize/minimize to/from fullscreen
 press 'p' to print image to screenshot.png
-press 'r' to toggle motion recording to screenshot0000.png through screenshot9999.png"""
+press 'r' to toggle motion recording to screenshot0000.png through screenshot9999.png""")
 
 glutInit(sys.argv)
 glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB)
