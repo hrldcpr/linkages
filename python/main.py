@@ -3,7 +3,7 @@ import math
 import numpy
 from OpenGL.GL import *
 from OpenGL.GLUT import *
-import Image
+from PIL import Image
 import linkage
 
 link = linkage.Linkage()
@@ -206,15 +206,15 @@ def mouse(button, state, x, y):
 
 def keyboard(key, x, y):
     global link, curVertex, curEdge, velocities, view, info, recording, tracks
-    if key=='f' and curVertex>=0:
+    if key==b'f' and curVertex>=0:
         if curVertex in link.fixed: link.fixed.remove(curVertex)
         else: link.fixed.append(curVertex)
         update()
-    elif key=='t' and curVertex>=0:
+    elif key==b't' and curVertex>=0:
         if curVertex in tracks: tracks.pop(curVertex)
         else: tracks[curVertex]=[]
         glutPostRedisplay()
-    elif key=='d':
+    elif key==b'd':
         if curVertex>=0:
             for i in tracks:
                 if i==curVertex:
@@ -228,7 +228,7 @@ def keyboard(key, x, y):
             link.removeEdge(curEdge)
             curEdge = -1
             update()
-    elif key=='z':
+    elif key==b'z':
         if curEdge>=0:
             i,j = link.edges[curEdge]
             link.removeEdge(curEdge) # TODO preserve the angles
@@ -242,38 +242,38 @@ def keyboard(key, x, y):
             link.edges.append(makeEdge(j, k))
             curVertex = k
             update()
-    elif key=='c':
+    elif key==b'c':
         tracks = {}
         link.clear()
         update()
-    elif key=='l':
+    elif key==b'l':
         tracks = {}
         link.clear()
         link.load()
         stats = (len(link.vertices), len(link.fixed), len(link.edges), len(link.angles))
         print('loaded %d vertices (%d fixed), %d edges, and %d angles'%stats)
         update()
-    elif key=='s':
+    elif key==b's':
         link.save()
         stats = (len(link.vertices), len(link.fixed), len(link.edges), len(link.angles))
         print('saved %d vertices (%d fixed), %d edges, and %d angles'%stats)
-    elif key=='v':
+    elif key==b'v':
         view = (view+1)%VIEWS
         glutPostRedisplay()
-    elif key=='i':
+    elif key==b'i':
         info = (info+1)%INFOS
         glutPostRedisplay()
-    elif key=='m':
+    elif key==b'm':
         if glutGameModeGet(GLUT_GAME_MODE_ACTIVE):
             glutLeaveGameMode()
             glutPostRedisplay()
         else:
             glutEnterGameMode()
             initWindow()
-    elif key=='p':
+    elif key==b'p':
         print('printed window to file')
         screenshot()
-    elif key=='r':
+    elif key==b'r':
         if recording>=0:
             print('recorded %d frames'%recording)
             recording = -1

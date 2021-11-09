@@ -153,7 +153,7 @@ class Linkage:
         n0 = len(self.vertices)
         parseVertex = lambda i: n0+int(i)
 
-        f = file(path)
+        f = open(path)
         modes = ['v','e','f','a']
         mode = ''
         for line in f:
@@ -182,8 +182,8 @@ class Linkage:
                 except ValueError: pass
 
     def save(self,path='saved_linkage.txt'):
-        f = file(path,'w')
-        f2 = file(path+'.js', 'w')
+        f = open(path,'w')
+        f2 = open(path+'.js', 'w')
         print('v', file=f)
         print('$.extend(new Linkage(), {', file=f2)
 
