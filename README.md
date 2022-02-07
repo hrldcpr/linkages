@@ -19,3 +19,6 @@ python main.py peaucellier.txt
 
 <h1>Windows Setup</h1>
 
+Windows machines use the same commands as Mac/Linux for setup, but they require an additional modification.
+
+The PyOpenGL library has issues when running 'main.py', and you will have to uninstall and reinstall a Windows-specific version. Details can be found in this Stack Overflow post: https://stackoverflow.com/a/68258293/2556682.
