@@ -4,6 +4,8 @@
 Provides a graphical interface for simulating mechanical linkages, and describes the rigidity theory used to implement the simulator.
 
 <h1>Mac/Linux Setup</h1>
+
+The following is code to set up a virtual environment, download the linkages simulator's required libraries, and run a basic program on a Mac or Linux operating system.
 <pre>
     <code>
         git clone https://github.com/hrldcpr/linkages.git
