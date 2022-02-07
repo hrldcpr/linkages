@@ -8,7 +8,7 @@ Provides a graphical interface for simulating mechanical linkages, and describes
 The following is code to set up a virtual environment, download the linkages simulator's required libraries, and run a basic program on a Mac or Linux operating system.
 <pre>
 <code>
-git clone https://github.com/hrldcpr/linkages.git
+git clone https://github.com/alexliu22/linkages.git
 cd linkages/python
 python3 -m venv .
 . bin/activate    (or activate.fish if you use fish shell)
