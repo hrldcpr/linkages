@@ -16,3 +16,6 @@ pip install -r requirements.txt
 python main.py peaucellier.txt
 </code>
 </pre>
+
+<h1>Windows Setup</h1>
+
