@@ -3,4 +3,14 @@
 
 Provides a graphical interface for simulating mechanical linkages, and describes the rigidity theory used to implement the simulator.
 
-<h1>Mac Setup</h1>
+<h1>Mac/Linux Setup</h1>
+<pre>
+    <code>
+        git clone https://github.com/hrldcpr/linkages.git
+        cd linkages/python
+        python3 -m venv .
+        . bin/activate    (or activate.fish if you use fish shell)
+        pip install -r requirements.txt
+        python main.py peaucellier.txt
+    </code>
+</pre>
