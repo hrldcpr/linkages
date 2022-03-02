@@ -7,7 +7,6 @@ var tracks = {};
 var view = 0;
 var VIEWS = 8;
 var info = 0;
-var instr = 0;
 var INFOS = 2;
 var createButton = 1;
 
@@ -60,13 +59,26 @@ function colorString(r, g, b) {
 function display() {
     if (createButton & 1){
         let fix_btn = document.createElement("button");
-        fix_btn.innerHTML = "Fix";
+        fix_btn.innerHTML = "Fix Point";
+        fix_btn.height = "50";
         fix_btn.onclick = function () {
             keypress('f');
         };
         document.body.appendChild(fix_btn);
 
+        let del_btn = document.createElement("button");
+        del_btn.innerHTML = "Delete Point";
+        del_btn.onclick = function () {
+            keypress('d');
+        };
+        document.body.appendChild(del_btn);
 
+        let view_btn = document.createElement("button");
+        view_btn.innerHTML = "Change view";
+        view_btn.onclick = function () {
+            keypress('v');
+        };
+        document.body.appendChild(view_btn);
         createButton = 0;
     }
 
@@ -86,15 +98,6 @@ function display() {
             var x = link.vertices[i][0];
             var y = link.vertices[i][1];
             c.fillText(String.fromCharCode(65 + i), x + 8, y + 12);
-        }
-    }
-
-    if (!(instr & 1)){
-        c.fillStyle = colorString(0, 0, 0);
-        c.font = '10pt Helvetica';
-        var s = ["click to add vertices","click to (de)select a vertex and middle-click (alt-click) another vertex to add an edge","click to (de)select an edge and middle-click (alt-click) an adjacent edge to fix their angle","right-click (control-click) to place or remove the attractor, which attracts the selected vertex","press 'f' to fix the selected vertex","press 't' to track the selected vertex","press 'd' to delete the selected component","press 'z' to split the selected edge at its midpoint/npress 'c' to clear everything away","press 'l' to load from saved_linkage.txt","press 's' to save to saved_linkage.txt","press 'v' to cycle through viewing options","press 'i' to toggle information display","press 'm' to maximize/minimize to/from fullscreen","press 'p' to print image to screenshot.png","press 'r' to toggle motion recording"]
-        for(let i = 0; i < s.length; i++){
-            c.fillText(s[i], 50, 400+10*i);
         }
     }
 
