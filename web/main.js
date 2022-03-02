@@ -7,7 +7,9 @@ var tracks = {};
 var view = 0;
 var VIEWS = 8;
 var info = 0;
+var instr = 0;
 var INFOS = 2;
+var createButton = 1;
 
 function reset() {
     allVelocities = [];
@@ -55,8 +57,19 @@ function colorString(r, g, b) {
     return '#' + colorComponent(r) + colorComponent(g) + colorComponent(b);
 }
 
-
 function display() {
+    if (createButton & 1){
+        let fix_btn = document.createElement("button");
+        fix_btn.innerHTML = "Fix";
+        fix_btn.onclick = function () {
+            keypress('f');
+        };
+        document.body.appendChild(fix_btn);
+
+
+        createButton = 0;
+    }
+
     var num = numeric;
     var canvas = $('#canvas');
     canvas.attr('width', canvas.width());
@@ -69,6 +82,20 @@ function display() {
         c.font = '10pt Helvetica';
         c.fillText(allVelocities.length + ' degrees of freedom',
                    50, 50);
+        for(let i = 0; i < link.vertices.length; i++){
+            var x = link.vertices[i][0];
+            var y = link.vertices[i][1];
+            c.fillText(String.fromCharCode(65 + i), x + 8, y + 12);
+        }
+    }
+
+    if (!(instr & 1)){
+        c.fillStyle = colorString(0, 0, 0);
+        c.font = '10pt Helvetica';
+        var s = ["click to add vertices","click to (de)select a vertex and middle-click (alt-click) another vertex to add an edge","click to (de)select an edge and middle-click (alt-click) an adjacent edge to fix their angle","right-click (control-click) to place or remove the attractor, which attracts the selected vertex","press 'f' to fix the selected vertex","press 't' to track the selected vertex","press 'd' to delete the selected component","press 'z' to split the selected edge at its midpoint/npress 'c' to clear everything away","press 'l' to load from saved_linkage.txt","press 's' to save to saved_linkage.txt","press 'v' to cycle through viewing options","press 'i' to toggle information display","press 'm' to maximize/minimize to/from fullscreen","press 'p' to print image to screenshot.png","press 'r' to toggle motion recording"]
+        for(let i = 0; i < s.length; i++){
+            c.fillText(s[i], 50, 400+10*i);
+        }
     }
 
     _.each(link.edges, function(e, k) {
@@ -205,6 +232,12 @@ function mouseright(x, y) {
 }
 
 function keypress(key) {
+    // var k = key;
+    // function myFunction(key2){
+    //     k = key2;
+    // }
+    // <button onclick="myFunction('f')">fix point</button>
+
     if (key == 'f' && curVertex >= 0) {
         var i = link.fixed.indexOf(curVertex);
         if (i >= 0) link.fixed.splice(i, 1);
@@ -253,6 +286,11 @@ function keypress(key) {
 
     else if (key == 'i') {
         info = (info + 1) % INFOS;
+        display();
+    }
+
+    else if (key == 'n') {
+        instr = (instr + 1) % INFOS;
         display();
     }
 
