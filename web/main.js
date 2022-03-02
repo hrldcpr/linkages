@@ -59,15 +59,22 @@ function colorString(r, g, b) {
 function display() {
     if (createButton & 1){
         let fix_btn = document.createElement("button");
-        fix_btn.innerHTML = "Fix Point";
+        fix_btn.innerHTML = "Fix Vertex";
         fix_btn.height = "50";
         fix_btn.onclick = function () {
             keypress('f');
         };
         document.body.appendChild(fix_btn);
 
+        let trace_btn = document.createElement("button");
+        trace_btn.innerHTML = "Trace Vertex";
+        trace_btn.onclick = function () {
+            keypress('t');
+        };
+        document.body.appendChild(trace_btn);
+
         let del_btn = document.createElement("button");
-        del_btn.innerHTML = "Delete Point";
+        del_btn.innerHTML = "Delete Vertex";
         del_btn.onclick = function () {
             keypress('d');
         };
@@ -79,6 +86,20 @@ function display() {
             keypress('v');
         };
         document.body.appendChild(view_btn);
+
+        let info_btn = document.createElement("button");
+        info_btn.innerHTML = "Toggle Info";
+        info_btn.onclick = function () {
+            keypress('i');
+        };
+        document.body.appendChild(info_btn);
+
+        let clear_btn = document.createElement("button");
+        clear_btn.innerHTML = "Clear Screen";
+        clear_btn.onclick = function () {
+            keypress('c');
+        };
+        document.body.appendChild(clear_btn);
         createButton = 0;
     }
 
