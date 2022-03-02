@@ -58,48 +58,54 @@ function colorString(r, g, b) {
 
 function display() {
     if (createButton & 1){
-        let fix_btn = document.createElement("button");
-        fix_btn.innerHTML = "Fix Vertex";
-        fix_btn.height = "50";
-        fix_btn.onclick = function () {
+        let buttonPane = document.createElement("body");
+        buttonPane.style.display = "flex";
+        buttonPane.style.justifyContent = "space-evenly";
+
+        let fixButton = document.createElement("button");
+        fixButton.innerHTML = "Fix Vertex";
+        fixButton.height = "50";
+        fixButton.onclick = function () {
             keypress('f');
         };
-        document.body.appendChild(fix_btn);
+        buttonPane.appendChild(fixButton);
 
-        let trace_btn = document.createElement("button");
-        trace_btn.innerHTML = "Trace Vertex";
-        trace_btn.onclick = function () {
+        let traceButton = document.createElement("button");
+        traceButton.innerHTML = "Trace Vertex";
+        traceButton.onclick = function () {
             keypress('t');
         };
-        document.body.appendChild(trace_btn);
+        buttonPane.appendChild(traceButton);
 
-        let del_btn = document.createElement("button");
-        del_btn.innerHTML = "Delete Vertex";
-        del_btn.onclick = function () {
+        let delButton = document.createElement("button");
+        delButton.innerHTML = "Delete Vertex";
+        delButton.onclick = function () {
             keypress('d');
         };
-        document.body.appendChild(del_btn);
+        buttonPane.appendChild(delButton);
 
-        let view_btn = document.createElement("button");
-        view_btn.innerHTML = "Change view";
-        view_btn.onclick = function () {
+        let viewButton = document.createElement("button");
+        viewButton.innerHTML = "Change view";
+        viewButton.onclick = function () {
             keypress('v');
         };
-        document.body.appendChild(view_btn);
+        buttonPane.appendChild(viewButton);
 
-        let info_btn = document.createElement("button");
-        info_btn.innerHTML = "Toggle Info";
-        info_btn.onclick = function () {
+        let infoButton = document.createElement("button");
+        infoButton.innerHTML = "Toggle Info";
+        infoButton.onclick = function () {
             keypress('i');
         };
-        document.body.appendChild(info_btn);
+        buttonPane.appendChild(infoButton);
 
-        let clear_btn = document.createElement("button");
-        clear_btn.innerHTML = "Clear Screen";
-        clear_btn.onclick = function () {
+        let clearButton = document.createElement("button");
+        clearButton.innerHTML = "Clear Screen";
+        clearButton.onclick = function () {
             keypress('c');
         };
-        document.body.appendChild(clear_btn);
+        buttonPane.appendChild(clearButton);
+
+        document.body.appendChild(buttonPane);
         createButton = 0;
     }
 
