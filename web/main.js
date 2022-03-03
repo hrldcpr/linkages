@@ -7,6 +7,7 @@ var tracks = {};
 var view = 0;
 var VIEWS = 8;
 var info = 0;
+var label = 0
 var INFOS = 2;
 var createButton = 1;
 
@@ -98,6 +99,13 @@ function display() {
         };
         buttonPane.appendChild(infoButton);
 
+        let labelButton = document.createElement("button");
+        labelButton.innerHTML = "Toggle Labels";
+        labelButton.onclick = function () {
+            keypress('l');
+        };
+        buttonPane.appendChild(labelButton);
+
         let clearButton = document.createElement("button");
         clearButton.innerHTML = "Clear Screen";
         clearButton.onclick = function () {
@@ -121,10 +129,19 @@ function display() {
         c.font = '10pt Helvetica';
         c.fillText(allVelocities.length + ' degrees of freedom',
                    50, 50);
+    }
+
+    if (!(label & 1)) {
+        if (link.labels.length < link.vertices.length) {
+            for(let j = link.labels.length; j < link.vertices.length; j++){
+                link.labels[j] = String.fromCharCode(65 + j);
+            }
+        }
+
         for(let i = 0; i < link.vertices.length; i++){
             var x = link.vertices[i][0];
             var y = link.vertices[i][1];
-            c.fillText(String.fromCharCode(65 + i), x + 8, y + 12);
+            c.fillText(link.labels[i], x + 8, y + 12);
         }
     }
 
@@ -316,6 +333,11 @@ function keypress(key) {
 
     else if (key == 'i') {
         info = (info + 1) % INFOS;
+        display();
+    }
+
+    else if (key == 'l') {
+        label = (label + 1) % INFOS;
         display();
     }
 

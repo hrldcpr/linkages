@@ -14,6 +14,7 @@ function Linkage() {
 
     this.clear = function() {
         this.vertices = []; // [(x,y)]
+        this.labels = []; // ["s"] is label for v_i
         this.fixed = []; // [i] fixes v_i
         this.edges = []; // [(i,j)] fixes distance between v_i and v_j
         this.angles = []; // [(i,j,k)] fixes angle between v_iv_j and v_iv_k
