@@ -15,6 +15,7 @@ tracks = {}
 view = 0
 VIEWS = 8
 info = 0
+instr = 0
 INFOS = 2
 recording = -1
 
@@ -65,6 +66,15 @@ def display():
     if info&1==0:
         glColor3f(0,0,0)
         drawString(50,50,GLUT_BITMAP_TIMES_ROMAN_10,'%d degrees of freedom'%len(velocities))
+        for i in range(len(link.vertices)):
+            x,y = link.vertices[i]
+            drawString(x+8,y-12, GLUT_BITMAP_HELVETICA_12, chr(65 + i))
+    
+    if instr&1==0:
+        glColor3f(0,0,0)
+        s = ["click to add vertices","click to (de)select a vertex and middle-click (alt-click) another vertex to add an edge","click to (de)select an edge and middle-click (alt-click) an adjacent edge to fix their angle","right-click (control-click) to place or remove the attractor, which attracts the selected vertex","press 'f' to fix the selected vertex","press 't' to track the selected vertex","press 'd' to delete the selected component","press 'z' to split the selected edge at its midpoint/npress 'c' to clear everything away","press 'l' to load from saved_linkage.txt","press 's' to save to saved_linkage.txt","press 'v' to cycle through viewing options","press 'i' to toggle information display","press 'm' to maximize/minimize to/from fullscreen","press 'p' to print image to screenshot.png","press 'r' to toggle motion recording"]
+        for i in range(len(s)):
+            drawString(50,550 - 10*i,GLUT_BITMAP_TIMES_ROMAN_10, s[i])
 
     glBegin(GL_LINES)
     for k in range(len(link.edges)):
@@ -205,7 +215,7 @@ def mouse(button, state, x, y):
         glutPostRedisplay()
 
 def keyboard(key, x, y):
-    global link, curVertex, curEdge, velocities, view, info, recording, tracks
+    global link, curVertex, curEdge, velocities, view, info, recording, tracks, instr
     if key==b'f' and curVertex>=0:
         if curVertex in link.fixed: link.fixed.remove(curVertex)
         else: link.fixed.append(curVertex)
@@ -262,6 +272,9 @@ def keyboard(key, x, y):
         glutPostRedisplay()
     elif key==b'i':
         info = (info+1)%INFOS
+        glutPostRedisplay()
+    elif key==b'n':
+        instr = (instr+1)%INFOS
         glutPostRedisplay()
     elif key==b'm':
         if glutGameModeGet(GLUT_GAME_MODE_ACTIVE):

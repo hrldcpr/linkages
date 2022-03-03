@@ -8,6 +8,7 @@ var view = 0;
 var VIEWS = 8;
 var info = 0;
 var INFOS = 2;
+var createButton = 1;
 
 function reset() {
     allVelocities = [];
@@ -55,8 +56,59 @@ function colorString(r, g, b) {
     return '#' + colorComponent(r) + colorComponent(g) + colorComponent(b);
 }
 
-
 function display() {
+    if (createButton & 1){
+        let buttonPane = document.createElement("body");
+        buttonPane.style.display = "flex";
+        buttonPane.style.justifyContent = "space-evenly";
+
+        let fixButton = document.createElement("button");
+        fixButton.innerHTML = "Fix Vertex";
+        fixButton.height = "50";
+        fixButton.onclick = function () {
+            keypress('f');
+        };
+        buttonPane.appendChild(fixButton);
+
+        let traceButton = document.createElement("button");
+        traceButton.innerHTML = "Trace Vertex";
+        traceButton.onclick = function () {
+            keypress('t');
+        };
+        buttonPane.appendChild(traceButton);
+
+        let delButton = document.createElement("button");
+        delButton.innerHTML = "Delete Vertex";
+        delButton.onclick = function () {
+            keypress('d');
+        };
+        buttonPane.appendChild(delButton);
+
+        let viewButton = document.createElement("button");
+        viewButton.innerHTML = "Change view";
+        viewButton.onclick = function () {
+            keypress('v');
+        };
+        buttonPane.appendChild(viewButton);
+
+        let infoButton = document.createElement("button");
+        infoButton.innerHTML = "Toggle Info";
+        infoButton.onclick = function () {
+            keypress('i');
+        };
+        buttonPane.appendChild(infoButton);
+
+        let clearButton = document.createElement("button");
+        clearButton.innerHTML = "Clear Screen";
+        clearButton.onclick = function () {
+            keypress('c');
+        };
+        buttonPane.appendChild(clearButton);
+
+        document.body.appendChild(buttonPane);
+        createButton = 0;
+    }
+
     var num = numeric;
     var canvas = $('#canvas');
     canvas.attr('width', canvas.width());
@@ -69,6 +121,11 @@ function display() {
         c.font = '10pt Helvetica';
         c.fillText(allVelocities.length + ' degrees of freedom',
                    50, 50);
+        for(let i = 0; i < link.vertices.length; i++){
+            var x = link.vertices[i][0];
+            var y = link.vertices[i][1];
+            c.fillText(String.fromCharCode(65 + i), x + 8, y + 12);
+        }
     }
 
     _.each(link.edges, function(e, k) {
@@ -205,6 +262,12 @@ function mouseright(x, y) {
 }
 
 function keypress(key) {
+    // var k = key;
+    // function myFunction(key2){
+    //     k = key2;
+    // }
+    // <button onclick="myFunction('f')">fix point</button>
+
     if (key == 'f' && curVertex >= 0) {
         var i = link.fixed.indexOf(curVertex);
         if (i >= 0) link.fixed.splice(i, 1);
@@ -253,6 +316,11 @@ function keypress(key) {
 
     else if (key == 'i') {
         info = (info + 1) % INFOS;
+        display();
+    }
+
+    else if (key == 'n') {
+        instr = (instr + 1) % INFOS;
         display();
     }
 
