@@ -113,6 +113,13 @@ function display() {
         };
         buttonPane.appendChild(clearButton);
 
+        let editLabelButton = document.createElement("button");
+        editLabelButton.innerHTML = "Edit Label";
+        editLabelButton.onclick = function () {
+            keypress('q');
+        };
+        buttonPane.appendChild(editLabelButton);
+
         document.body.appendChild(buttonPane);
         createButton = 0;
     }
@@ -318,6 +325,12 @@ function keypress(key) {
             curEdge = undefined;
             update();
         }
+    }
+
+    else if(key == 'q' && curVertex >=0) {
+        var new_label = prompt("Please enter new label", "<new label>");
+        link.labels[curVertex] = new_label;
+        display();
     }
 
     else if (key == 'c') {
