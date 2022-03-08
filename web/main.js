@@ -141,7 +141,7 @@ function display() {
     if (!(label & 1)) {
         if (link.labels.length < link.vertices.length) {
             for(let j = link.labels.length; j < link.vertices.length; j++){
-                link.labels[j] = String.fromCharCode(65 + j);
+                link.labels[j] = String.fromCharCode(65 + j + link.labelCount);
             }
         }
 
