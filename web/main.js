@@ -99,6 +99,13 @@ function display() {
         };
         buttonPane.appendChild(infoButton);
 
+        let editLabelButton = document.createElement("button");
+        editLabelButton.innerHTML = "Edit Label";
+        editLabelButton.onclick = function () {
+            keypress('q');
+        };
+        buttonPane.appendChild(editLabelButton);
+
         let labelButton = document.createElement("button");
         labelButton.innerHTML = "Toggle Labels";
         labelButton.onclick = function () {
@@ -112,13 +119,6 @@ function display() {
             keypress('c');
         };
         buttonPane.appendChild(clearButton);
-
-        let editLabelButton = document.createElement("button");
-        editLabelButton.innerHTML = "Edit Label";
-        editLabelButton.onclick = function () {
-            keypress('q');
-        };
-        buttonPane.appendChild(editLabelButton);
 
         document.body.appendChild(buttonPane);
         createButton = 0;
