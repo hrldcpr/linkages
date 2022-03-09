@@ -9,6 +9,7 @@ var VIEWS = 8;
 var info = 0;
 var INFOS = 2;
 var createButton = 1;
+var savedCount = 3;
 
 function reset() {
     allVelocities = [];
@@ -104,6 +105,13 @@ function display() {
             keypress('c');
         };
         buttonPane.appendChild(clearButton);
+
+        let saveButton = document.createElement("button");
+        saveButton.innerHTML = "Save Linkage";
+        saveButton.onclick = function () {
+            keypress('s');
+        };
+        buttonPane.appendChild(saveButton);
 
         document.body.appendChild(buttonPane);
         createButton = 0;
@@ -322,6 +330,34 @@ function keypress(key) {
     else if (key == 'n') {
         instr = (instr + 1) % INFOS;
         display();
+    }
+
+    else if (key == 's') {
+        if (savedCount >= 9) {
+            alert("You have exceeded the allowed number of saved linkages in this session.");
+            return;
+        }
+
+        var linkageName = prompt("What would you like to name this linkage?", "<name>");
+        if (linkageName == null) return;
+        var verticesCopy = [];
+        for (var i=0; i<link.vertices.length; i++) {
+            verticesCopy.push([...link.vertices[i]]);
+        }
+        PRESETS.push(
+            $.extend(new Linkage(), {
+                name: linkageName,
+                vertices: verticesCopy,
+                fixed: [...link.fixed],
+                edges: [...link.edges],
+                angles: [...link.angles],
+            })
+        );
+
+        var ol = $('#presets');
+        ol.append('<li>' + linkageName + '</li>');
+        savedCount++;
+        update();
     }
 
     else if ((key - '1') in PRESETS) {
