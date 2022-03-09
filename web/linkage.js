@@ -52,7 +52,6 @@ function Linkage() {
 
         this.labels.splice(i0, 1);
         this.labelCount += 1;
-        // this.labels[i0] = "";
 
         this.edges = $.map(this.edges, function(e) {
             if (e.i != i0 && e.j != i0)
