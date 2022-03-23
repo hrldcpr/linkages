@@ -383,6 +383,7 @@ function keypress(key) {
             $.extend(new Linkage(), {
                 name: linkageName,
                 vertices: verticesCopy,
+                labels: [...link.labels],
                 fixed: [...link.fixed],
                 edges: [...link.edges],
                 angles: [...link.angles],
