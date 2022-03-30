@@ -94,15 +94,7 @@ function display() {
         delButton.innerHTML = "Delete Vertex";
         delButton.onclick = function () {
             keypress('d');
-            map.delete(curPicked);
-            for (const [key, value] of Object.entries(map)) {
-                console.log(key);
-                console.log(value);
-                    if(key>curPicked){
-                        map.delete(key);
-                        map.put(key-1, value);
-                    }
-              }
+            
         };
         buttonPane.appendChild(delButton);
 
@@ -149,10 +141,13 @@ function display() {
         buttonPane.appendChild(saveButton);
 
         document.body.appendChild(buttonPane);
-        let gBtn = document.getElementById("color-btn"); 
-        gBtn.onchange = function () {
-            colorChange(gBtn.value);
+        let colorBtn = document.getElementById("color-btn"); 
+
+        let sBtn = document.getElementById("color-select-btn"); 
+        sBtn.onclick = function () {
+            colorChange(colorBtn.value);
         };
+
         createButton = 0;
     }
 
@@ -359,6 +354,15 @@ function keypress(key) {
     }
 
     else if (key == 'd') {
+        map.delete(curVertex);
+        map.forEach((value,key)=>{
+            if(key>curVertex){
+                let newKey = key-1;
+                map.delete(key);
+                map.set(newKey, value);
+            }
+        });
+        curPicked = null; 
         if (curVertex >= 0) {
             if (curVertex in tracks) {
                 var oldTracks = tracks;
@@ -378,6 +382,7 @@ function keypress(key) {
             curEdge = undefined;
             update();
         }
+        
     }
 
     else if(key == 'q' && curVertex >=0) {
