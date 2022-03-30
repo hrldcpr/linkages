@@ -128,6 +128,16 @@ function display() {
         };
         buttonPane.appendChild(saveButton);
 
+        let importButton = document.createElement("input");
+        importButton.setAttribute("type", "file");
+        importButton.setAttribute("accept", ".json")
+        importButton.innerHTML = "Import Linkage";
+        importButton.id = "import";
+        importButton.onclick = function () {
+            keypress('u');
+        };
+        buttonPane.appendChild(importButton);
+
         document.body.appendChild(buttonPane);
         createButton = 0;
     }
@@ -294,12 +304,6 @@ function mouseright(x, y) {
 }
 
 function keypress(key) {
-    // var k = key;
-    // function myFunction(key2){
-    //     k = key2;
-    // }
-    // <button onclick="myFunction('f')">fix point</button>
-
     if (key == 'f' && curVertex >= 0) {
         var i = link.fixed.indexOf(curVertex);
         if (i >= 0) link.fixed.splice(i, 1);
@@ -368,32 +372,42 @@ function keypress(key) {
     }
 
     else if (key == 's') {
-        if (savedCount >= 9) {
-            alert("You have exceeded the allowed number of saved linkages in this session.");
-            return;
-        }
-
         var linkageName = prompt("What would you like to name this linkage?", "<name>");
         if (linkageName == null) return;
+
         var verticesCopy = [];
         for (var i=0; i<link.vertices.length; i++) {
             verticesCopy.push([...link.vertices[i]]);
         }
-        PRESETS.push(
-            $.extend(new Linkage(), {
-                name: linkageName,
-                vertices: verticesCopy,
-                labels: [...link.labels],
-                fixed: [...link.fixed],
-                edges: [...link.edges],
-                angles: [...link.angles],
-            })
-        );
+        var linkageCopy = {
+            vertices: verticesCopy,
+            labels: [...link.labels],
+            fixed: [...link.fixed],
+            edges: [...link.edges],
+            angles: [...link.angles],
+        }
 
-        var ol = $('#presets');
-        ol.append('<li>' + linkageName + '</li>');
-        savedCount++;
-        update();
+        download(linkageName, JSON.stringify(linkageCopy));
+    }
+
+    else if (key == 'u') {
+        document.getElementById("import").addEventListener("change", function() {
+            var file_to_read = document.getElementById("import").files[0];
+            var fileread = new FileReader();
+            fileread.onload = function(e) {
+              var content = e.target.result;
+              var intern = JSON.parse(content);
+              
+              reset();
+              link.vertices = intern.vertices;
+              link.labels = intern.labels;
+              link.fixed = intern.fixed;
+              link.edges = intern.edges;
+              link.angles = intern.angles;
+              update();
+            };
+            fileread.readAsText(file_to_read);
+          });
     }
 
     else if ((key - '1') in PRESETS) {
@@ -403,6 +417,18 @@ function keypress(key) {
     }
 }
 
+function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename + '.json');
+  
+    element.style.display = 'none';
+    document.body.appendChild(element);
+  
+    element.click();
+  
+    document.body.removeChild(element);
+  }
 
 var resized = false;
 function idle() {
