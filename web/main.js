@@ -307,6 +307,18 @@ function keypress(key) {
         update();
     }
 
+    else if (key == 'a') {
+        console.log("Merging vertices...");
+        const midpoint = ([x1, y1], [x2, y2]) => [(x1 + x2) / 2, (y1 + y2) / 2];
+        var mid = midpoint(link.vertices[3], link.vertices[4])
+        mouseright(mid[0], mid[1]);
+        mouseleft(link.vertices[3][0], link.vertices[3][1]);
+        setTimeout(function() {
+            link.mergeVertices(3, 4);
+        }, 5000);
+        update();
+    }
+
     else if (key == 't' && curVertex >= 0) {
         if (curVertex in tracks) delete tracks[curVertex];
         else tracks[curVertex] = [];
