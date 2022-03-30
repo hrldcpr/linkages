@@ -11,13 +11,17 @@ var label = 0
 var INFOS = 2;
 var createButton = 1;
 var savedCount = 3;
-
+let shapeBool = true;
+let curPicked = null;
+const map = new Map();
 function reset() {
     allVelocities = [];
     curVertex = undefined;
     curEdge = undefined;
     attractor = undefined;
     tracks = {};
+    map = new Map();
+    curPicked = null;
 }
 
 var VELOCITY_COEFF = 1;
@@ -44,8 +48,15 @@ function strokeLine(c, u, v) {
 }
 
 function fillPoint(c, v) {
-    c.fillRect(v[0] - VERTEX_SIZE/2, v[1] - VERTEX_SIZE/2,
+    if(shapeBool)
+        c.fillRect(v[0] - VERTEX_SIZE/2, v[1] - VERTEX_SIZE/2,
                VERTEX_SIZE, VERTEX_SIZE);
+    else{
+        c.beginPath();
+        c.arc(v[0] , v[1] , VERTEX_SIZE/2, 0, 2 * Math.PI, false);
+        c.fill();
+        c.stroke();
+    }
 }
 
 function colorComponent(x) {
@@ -129,6 +140,10 @@ function display() {
         buttonPane.appendChild(saveButton);
 
         document.body.appendChild(buttonPane);
+        let gBtn = document.getElementById("color-btn"); 
+        gBtn.onchange = function () {
+            colorChange(gBtn.value);
+        };
         createButton = 0;
     }
 
@@ -203,7 +218,19 @@ function display() {
         var r = link.fixed.indexOf(i) != -1 ? 1 : 0;
         var g = i in tracks ? 1 : 0;
         if (i == curVertex || !(view & 2)) {
-            c.fillStyle = colorString(r, g, b);
+            if(curPicked!=i){
+                if(!map.has(i))
+                    c.fillStyle = colorString(r, g, b);
+                else
+                    c.fillStyle = map.get(i);
+            }
+            else
+                c.fillStyle = colorString(r, g, b);
+            c.strokeStyle = colorString(r, g, b);
+            if(link.fixed.indexOf(i) == -1)
+                shapeBool = false;
+            else
+                shapeBool = true;
             fillPoint(c, v);
         }
     });
@@ -242,9 +269,18 @@ function makeAngle2(i1, j1, i2, j2) {
     if (j1 == i2) return makeAngle(j1,i1,j2);
     if (j1 == j2) return makeAngle(j1,i1,i2);
 }
-
+function colorChange(c){
+    if(curPicked!=null){
+        map.set(curPicked, c);
+    }
+    console.log(map.size);
+    console.log(curPicked);
+    console.log(c);
+    display();
+}
 function mouseleft(x, y) {
     var picked = pick(x, y);
+    curPicked = picked.vertex;
     if (picked.vertex >= 0 || picked.edge >= 0) {
         if (picked.vertex == curVertex)
             delete picked.vertex; // clicking cur deselects
