@@ -385,6 +385,7 @@ function keypress(key) {
             fixed: [...link.fixed],
             edges: [...link.edges],
             angles: [...link.angles],
+            labelCount: link.labelCount,
         }
 
         download(linkageName, JSON.stringify(linkageCopy));
@@ -404,6 +405,7 @@ function keypress(key) {
               link.fixed = intern.fixed;
               link.edges = intern.edges;
               link.angles = intern.angles;
+              link.labelCount = intern.labelCount;
               update();
             };
             fileread.readAsText(file_to_read);
