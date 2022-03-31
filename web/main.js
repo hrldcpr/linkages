@@ -8,11 +8,12 @@ var view = 0;
 var VIEWS = 8;
 var info = 0;
 var label = 0
+var color = "black";
 var INFOS = 2;
 var createButton = 1;
 var savedCount = 3;
 let shapeBool = true;
-let curPicked = null;
+//let curPicked = null;
 const map = new Map();
 function reset() {
     allVelocities = [];
@@ -21,7 +22,7 @@ function reset() {
     attractor = undefined;
     tracks = {};
     map = new Map();
-    curPicked = null;
+    //curPicked = null;
 }
 
 var VELOCITY_COEFF = 1;
@@ -141,11 +142,13 @@ function display() {
         buttonPane.appendChild(saveButton);
 
         document.body.appendChild(buttonPane);
+
         let colorBtn = document.getElementById("color-btn"); 
 
-        let sBtn = document.getElementById("color-select-btn"); 
-        sBtn.onclick = function () {
-            colorChange(colorBtn.value);
+        let selectBtn = document.getElementById("color-select-btn"); 
+        selectBtn.onclick = function () {
+            color = colorBtn.value;
+            link.colors[curVertex] = colorBtn.value;
         };
 
         createButton = 0;
@@ -178,7 +181,7 @@ function display() {
             c.fillText(link.labels[i], x + 8, y + 12);
         }
     }
-
+    
     _.each(link.edges, function(e, k) {
         if (k == curEdge) c.strokeStyle = colorString(1, 0.3, 1);
         else c.strokeStyle = colorString(1, 0.3, 0);
@@ -222,15 +225,11 @@ function display() {
         var r = link.fixed.indexOf(i) != -1 ? 1 : 0;
         var g = i in tracks ? 1 : 0;
         if (i == curVertex || !(view & 2)) {
-            if(curPicked!=i){
-                if(!map.has(i))
-                    c.fillStyle = colorString(r, g, b);
-                else
-                    c.fillStyle = map.get(i);
-            }
+            c.strokeStyle = colorString(r, g, b);
+            if(curVertex!=i)
+                c.fillStyle = link.colors[i];
             else
                 c.fillStyle = colorString(r, g, b);
-            c.strokeStyle = colorString(r, g, b);
             if(link.fixed.indexOf(i) == -1)
                 shapeBool = false;
             else
@@ -273,18 +272,10 @@ function makeAngle2(i1, j1, i2, j2) {
     if (j1 == i2) return makeAngle(j1,i1,j2);
     if (j1 == j2) return makeAngle(j1,i1,i2);
 }
-function colorChange(c){
-    if(curPicked!=null){
-        map.set(curPicked, c);
-    }
-    console.log(map.size);
-    console.log(curPicked);
-    console.log(c);
-    display();
-}
+
 function mouseleft(x, y) {
     var picked = pick(x, y);
-    curPicked = picked.vertex;
+    //curPicked = picked.vertex;
     if (picked.vertex >= 0 || picked.edge >= 0) {
         if (picked.vertex == curVertex)
             delete picked.vertex; // clicking cur deselects
@@ -296,6 +287,7 @@ function mouseleft(x, y) {
     }
     else {
         link.vertices.push([x, y]);
+        link.colors.push("black");
         update();
     }
 }
@@ -362,7 +354,7 @@ function keypress(key) {
                 map.set(newKey, value);
             }
         });
-        curPicked = null; 
+        //curPicked = null; 
         if (curVertex >= 0) {
             if (curVertex in tracks) {
                 var oldTracks = tracks;
@@ -422,7 +414,6 @@ function keypress(key) {
             alert("You have exceeded the allowed number of saved linkages in this session.");
             return;
         }
-
         var linkageName = prompt("What would you like to name this linkage?", "<name>");
         if (linkageName == null) return;
         var verticesCopy = [];
