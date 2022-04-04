@@ -13,7 +13,6 @@ var INFOS = 2;
 var createButton = 1;
 var savedCount = 3;
 let shapeBool = true;
-//let curPicked = null;
 const map = new Map();
 function reset() {
     allVelocities = [];
@@ -22,7 +21,6 @@ function reset() {
     attractor = undefined;
     tracks = {};
     map = new Map();
-    //curPicked = null;
 }
 
 var VELOCITY_COEFF = 1;
@@ -243,7 +241,14 @@ function display() {
         fillPoint(c, attractor);
     }
 }
-
+function createMap(){
+    for(let j = link.colors.length; j < link.colors.length; j++){
+        if(!map.has(link.colors[j]))
+            map.set(ink.colors[j], []);
+        map[link.colors[j]].push(link.labels[j]);
+        
+    }
+}
 function pick(x, y) {
     var i = link.findVertex(x, y);
     if (i >= 0 && link.vertexDist2(x, y, i) < PICK_DIST2)
@@ -275,7 +280,6 @@ function makeAngle2(i1, j1, i2, j2) {
 
 function mouseleft(x, y) {
     var picked = pick(x, y);
-    //curPicked = picked.vertex;
     if (picked.vertex >= 0 || picked.edge >= 0) {
         if (picked.vertex == curVertex)
             delete picked.vertex; // clicking cur deselects
@@ -346,15 +350,7 @@ function keypress(key) {
     }
 
     else if (key == 'd') {
-        map.delete(curVertex);
-        map.forEach((value,key)=>{
-            if(key>curVertex){
-                let newKey = key-1;
-                map.delete(key);
-                map.set(newKey, value);
-            }
-        });
-        //curPicked = null; 
+        
         if (curVertex >= 0) {
             if (curVertex in tracks) {
                 var oldTracks = tracks;

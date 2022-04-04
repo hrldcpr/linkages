@@ -20,7 +20,6 @@ function Linkage() {
         this.edges = []; // [(i,j)] fixes distance between v_i and v_j
         this.angles = []; // [(i,j,k)] fixes angle between v_iv_j and v_iv_k
         this.colors = []; // ["c"] is color for v_i
-        this.colorCount = 0;
     };
 
     this.copy = function() {
