@@ -147,8 +147,9 @@ function display() {
         selectBtn.onclick = function () {
             color = colorBtn.value;
             link.colors[curVertex] = colorBtn.value;
+            createMap();
         };
-
+        
         createButton = 0;
     }
 
@@ -170,6 +171,7 @@ function display() {
         if (link.labels.length < link.vertices.length) {
             for(let j = link.labels.length; j < link.vertices.length; j++){
                 link.labels[j] = String.fromCharCode(65 + j + link.labelCount);
+                
             }
         }
 
@@ -179,7 +181,7 @@ function display() {
             c.fillText(link.labels[i], x + 8, y + 12);
         }
     }
-    
+    createMap();
     _.each(link.edges, function(e, k) {
         if (k == curEdge) c.strokeStyle = colorString(1, 0.3, 1);
         else c.strokeStyle = colorString(1, 0.3, 0);
@@ -240,14 +242,33 @@ function display() {
         c.fillStyle = colorString(0.5, 0.5, 0.5)
         fillPoint(c, attractor);
     }
+    
 }
 function createMap(){
-    for(let j = link.colors.length; j < link.colors.length; j++){
-        if(!map.has(link.colors[j]))
-            map.set(ink.colors[j], []);
-        map[link.colors[j]].push(link.labels[j]);
+    map.clear();
+    for(let j = 0; j < link.colors.length; j++){
+        if(!map.has(link.colors[j])){
+            let l = [];
+            map.set(link.colors[j], l);
+        }
+        let n = map.get(link.colors[j]);
+        n.push(link.labels[j]);
         
+        map.set(link.colors[j],n);
     }
+    let table = '<table border="1">';
+    table += `<tr><th>Color</th><th>Labels</th></tr>`;
+    
+    map.forEach((values , keys) => {
+
+        table = table + `<tr>`;
+        table = table + `<td style="color:${keys}">&#9635</td>`;
+        table = table + `<td>${values}</td>`;
+        table += `</tr>`;
+        
+        });
+    table += "</table>";
+    document.getElementById("color-table").innerHTML = table;
 }
 function pick(x, y) {
     var i = link.findVertex(x, y);
