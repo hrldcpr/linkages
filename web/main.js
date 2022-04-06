@@ -442,6 +442,7 @@ function keypress(key) {
                 name: linkageName,
                 vertices: verticesCopy,
                 labels: [...link.labels],
+                colors: [...link.colors],
                 fixed: [...link.fixed],
                 edges: [...link.edges],
                 angles: [...link.angles],
