@@ -47,9 +47,13 @@ function strokeLine(c, u, v) {
 }
 
 function fillPoint(c, v) {
-    if(shapeBool)
-        c.fillRect(v[0] - VERTEX_SIZE/2, v[1] - VERTEX_SIZE/2,
+    if(shapeBool){
+        c.beginPath();
+        c.rect(v[0] - VERTEX_SIZE/2, v[1] - VERTEX_SIZE/2,
                VERTEX_SIZE, VERTEX_SIZE);
+        c.fill();
+        c.stroke();
+        }
     else{
         c.beginPath();
         c.arc(v[0] , v[1] , VERTEX_SIZE/2, 0, 2 * Math.PI, false);
@@ -148,6 +152,7 @@ function display() {
             color = colorBtn.value;
             link.colors[curVertex] = colorBtn.value;
             createMap();
+            display();
         };
         
         createButton = 0;
@@ -225,11 +230,15 @@ function display() {
         var r = link.fixed.indexOf(i) != -1 ? 1 : 0;
         var g = i in tracks ? 1 : 0;
         if (i == curVertex || !(view & 2)) {
-            c.strokeStyle = colorString(r, g, b);
+            c.fillStyle = link.colors[i];
+            c.lineWidth = 2;
             if(curVertex!=i)
-                c.fillStyle = link.colors[i];
-            else
-                c.fillStyle = colorString(r, g, b);
+                c.strokeStyle = "black";
+            else{
+                c.strokeStyle = "red";
+                
+            }
+
             if(link.fixed.indexOf(i) == -1)
                 shapeBool = false;
             else
