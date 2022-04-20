@@ -1,6 +1,6 @@
 var link = new Linkage();
 var allVelocities = [];
-var curVertex;
+var curVertices = [];
 var curEdge;
 var attractor;
 var tracks = {};
@@ -14,7 +14,7 @@ var savedCount = 3;
 
 function reset() {
     allVelocities = [];
-    curVertex = undefined;
+    curVertices = [];
     curEdge = undefined;
     attractor = undefined;
     tracks = {};
@@ -208,10 +208,10 @@ function display() {
     }
 
     _.each(link.vertices, function(v, i) {
-        var b = i == curVertex ? 1 : 0;
+        var b = curVertices.indexOf(i) >= 0 ? 1 : 0;
         var r = link.fixed.indexOf(i) != -1 ? 1 : 0;
         var g = i in tracks ? 1 : 0;
-        if (i == curVertex || !(view & 2)) {
+        if (curVertices.indexOf(i) >= 0 || !(view & 2)) {
             c.fillStyle = colorString(r, g, b);
             fillPoint(c, v);
         }
@@ -255,11 +255,14 @@ function makeAngle2(i1, j1, i2, j2) {
 function mouseleft(x, y) {
     var picked = pick(x, y);
     if (picked.vertex >= 0 || picked.edge >= 0) {
-        if (picked.vertex == curVertex)
-            delete picked.vertex; // clicking cur deselects
+        if (curVertices.indexOf(picked.vertex) >= 0)
+            curVertices = curVertices.filter(vertex => vertex !== picked.vertex); // clicking cur deselects
+        else {
+            if (picked.vertex !== undefined)
+                curVertices.push(picked.vertex);
+        }
         if (picked.edge == curEdge)
             delete picked.edge;
-        curVertex = picked.vertex;
         curEdge = picked.edge;
         display();
     }
@@ -273,11 +276,13 @@ function mousemiddle(x, y) {
     var picked = pick(x, y);
     var i = picked.vertex, k = picked.edge;
 
-    if (i >= 0 && curVertex >= 0 && i != curVertex) {
-        var edge = makeEdge(i, curVertex);
-        var k = link.getEdge(edge);
-        if (k >= 0) link.removeEdge(k);
-        else link.edges.push(edge);
+    if (i >= 0 && curVertices.length > 0 && curVertices.indexOf(i) < 0) {
+        for (const curVertex of curVertices) {
+            var edge = makeEdge(i, curVertex);
+            var k = link.getEdge(edge);
+            if (k >= 0) link.removeEdge(k);
+            else link.edges.push(edge);
+        }
         update();
     }
 
@@ -302,60 +307,69 @@ function mouseright(x, y) {
     display();
 }
 
-const delay = ms => new Promise(res => setTimeout(res, ms));
+let isMerging = false;
 
-async function keypress(key) {
+function keypress(key) {
     // var k = key;
     // function myFunction(key2){
     //     k = key2;
     // }
     // <button onclick="myFunction('f')">fix point</button>
 
-    if (key == 'f' && curVertex >= 0) {
-        var i = link.fixed.indexOf(curVertex);
-        if (i >= 0) link.fixed.splice(i, 1);
-        else link.fixed.push(curVertex);
+    if (key == 'f' && curVertices.length > 0) {
+        for (const curVertex of curVertices) {
+            var i = link.fixed.indexOf(curVertex);
+            if (i >= 0) link.fixed.splice(i, 1);
+            else link.fixed.push(curVertex);
+        }
         update();
     }
 
-    else if (key == 'a') {
-        // await delay(5000);
-        // link.mergeVertices(0,1);
-        // update();
-        // console.log("Merging vertices...");
+    else if (key == 'a' && curVertices.length == 2 && !isMerging) {
+        isMerging = true;
+        const i0 = Math.min(curVertices[0], curVertices[1]);
+        const i1 = Math.max(curVertices[0], curVertices[1]);
         const midpoint = ([x1, y1], [x2, y2]) => [(x1 + x2) / 2, (y1 + y2) / 2];
-        var mid = midpoint(link.vertices[3], link.vertices[4])
+        var mid = midpoint(link.vertices[i0], link.vertices[i1])
         mouseright(mid[0], mid[1]);
-        mouseleft(link.vertices[3][0], link.vertices[3][1]);
         setTimeout(() => {
-            link.mergeVertices(3, 4);
+            const success = link.mergeVertices(i0, i1);
+            if (success) {
+                curVertices = curVertices.filter((vertex) => vertex !== i1);
+            }
             mouseright(mid[0], mid[1]);
             update();
+            isMerging = false; // merge attempt finished
         }, 5000);
         
-        // idle();
     }
 
-    else if (key == 't' && curVertex >= 0) {
-        if (curVertex in tracks) delete tracks[curVertex];
-        else tracks[curVertex] = [];
+    else if (key == 't' && curVertices.length > 0) {
+        for (const curVertex of curVertices) {
+            if (curVertex in tracks) delete tracks[curVertex];
+            else tracks[curVertex] = [];
+        }
         display();
     }
 
     else if (key == 'd') {
-        if (curVertex >= 0) {
-            if (curVertex in tracks) {
-                var oldTracks = tracks;
-                tracks = {};
-                _.each(oldTracks, function(track, i) {
-                    if (i != curVertex)
-                        tracks[i < curVertex ? i : i-1] = track;
-                });
-            }
+        if (curVertices.length > 0) {
+            for (const curVertex of curVertices.sort((a,b) => b-a)) {
+                if (curVertex in tracks) {
+                    var oldTracks = tracks;
+                    tracks = {};
+                    _.each(oldTracks, function(track, i) {
+                        if (i != curVertex)
+                            tracks[i < curVertex ? i : i-1] = track;
+                    });
+                }
 
-            link.removeVertex(curVertex);
-            curVertex = undefined;
+                link.removeVertex(curVertex);
+                update()
+            }
+            curVertices = [];
             update();
+            display();
         }
         else if (curEdge >= 0) {
             link.removeEdge(curEdge);
@@ -364,9 +378,9 @@ async function keypress(key) {
         }
     }
 
-    else if(key == 'q' && curVertex >=0) {
+    else if(key == 'q' && curVertices.length == 1) {
         var new_label = prompt("Please enter new label", "<new label>");
-        link.labels[curVertex] = new_label;
+        link.labels[curVertices] = new_label;
         display();
     }
 
@@ -435,11 +449,11 @@ async function keypress(key) {
 
 var resized = false;
 function idle() {
-    if (attractor && curVertex >= 0 && allVelocities.length && link.fixed.indexOf(curVertex) < 0) {
-        var num = numeric;
-        for (const currentVertex of [curVertex, link.vertices.length-1]) {
-        
-            var velocity0 = num.sub(attractor, link.vertices[currentVertex]);
+    for (const curVertex of curVertices) {
+        if (attractor && curVertex >= 0 && allVelocities.length && link.fixed.indexOf(curVertex) < 0) {
+            var num = numeric;
+            
+            var velocity0 = num.sub(attractor, link.vertices[curVertex]);
             
             if (num.norm2Squared(velocity0) < ATTRACT_DIST2) { // turn off attractor
                 attractor = undefined;
@@ -449,7 +463,7 @@ function idle() {
             else {
                 velocity0 = num.mul(VELOCITY_MAG, normalized(velocity0));
                 _.each(allVelocities, function(velocities) {
-                    var velocity = velocities[currentVertex];
+                    var velocity = velocities[curVertex];
                     var d = num.norm2Squared(velocity);
                     if (d < 1e-9) return;
 
@@ -474,15 +488,14 @@ function idle() {
                             track.splice(0, track.length - TRACK_LENGTH);
                     }
                 });
-
                 update();
             }
+            
         }
-        
-    }
-    else if (resized) {
-        display();
-        resized = false;
+        else if (resized) {
+            display();
+            resized = false;
+        }
     }
 
     setTimeout(idle, 10);
