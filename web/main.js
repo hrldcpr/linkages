@@ -62,7 +62,18 @@ function fillPoint(c, v) {
         c.stroke();
     }
 }
-
+function fillAttractor(c, v){
+    c.beginPath();
+    c.moveTo(v[0], v[1]);
+    c.lineTo(v[0]+10, v[1]+10);
+    c.strokeStyle = 'red';
+    c.stroke();
+    c.beginPath();
+    c.moveTo(v[0]+10, v[1]);
+    c.lineTo(v[0], v[1]+10);
+    c.strokeStyle = 'red'
+    c.stroke()
+}
 function colorComponent(x) {
     x = Math.round(255 * x).toString(16);
     if (x.length < 2) x = '0' + x;
@@ -260,7 +271,7 @@ function display() {
 
     if (attractor) {
         c.fillStyle = colorString(0.5, 0.5, 0.5)
-        fillPoint(c, attractor);
+        fillAttractor(c, attractor);
     }
     
 }
