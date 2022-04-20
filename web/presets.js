@@ -7,7 +7,8 @@ var PRESETS = [
         fixed: [1],
         edges: [{i: 0, j: 1},
                 {i: 1, j: 2}],
-        angles: []
+        angles: [],
+        colors: ["black","black","black"]
     }),
 
     $.extend(new Linkage(), {
@@ -19,6 +20,7 @@ var PRESETS = [
                 {i: 1, j: 4},
                 {i: 2, j: 4}],
         angles: [{i: 4, j: 1, k: 2}],
+        colors: ["black","black","black","black","black"]
     }),
 
     $.extend(new Linkage(), {
@@ -33,6 +35,7 @@ var PRESETS = [
                 {i: 3, j: 5},
                 {i: 4, j: 5}],
         angles: [],
+        colors: ["black","black","black","black","black","black"]
     }),
 
 ];
