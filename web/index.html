@@ -17,25 +17,27 @@
 
   </head>
   <body>
+    
     <div id="instructions">
+      <p>Instructions</p>
       <ul>
         <li>click to add vertices</li>
         <li>click to (de)select a vertex and option-click another vertex to add an edge</li>
         <li>click to (de)select an edge and option-click an adjacent edge to fix their angle</li>
         <li>shift-click to place or remove the attractor, which attracts the selected vertex</li>
-        <li>press 'f' to fix the selected vertex</li>
-        <li>press 't' to trace the motion of the selected vertex</li>
-        <li>press 'd' to delete the selected vertex or edge</li>
-        <li>press 'c' to clear everything away</li>
-        <li>press 'v' to cycle through viewing options</li>
-        <li>press 'i' to toggle information display</li>
-        <li>press 's' to save the current linkage</li>
       </ul>
-
+      <p>Color Key</p>
+      <div id='color-table'>
+      </div>
       <p>press a number to load a preset linkage:</p>
       <ol id="presets">
       </ol>
-
+      <p>Color Select:</p>
+      <div id='color-chart'>
+          <input type="color" id="color-btn" name="head"
+                 value="#e66465">
+          <button id="color-select-btn" for="head">Select</button>
+      </div>
       <p>Also:</p>
       <ul>
         <li><a href="/linkages/">the original</a> python version</li>

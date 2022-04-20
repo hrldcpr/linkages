@@ -21,6 +21,7 @@ function Linkage() {
         this.fixed = []; // [i] fixes v_i
         this.edges = []; // [(i,j)] fixes distance between v_i and v_j
         this.angles = []; // [(i,j,k)] fixes angle between v_iv_j and v_iv_k
+        this.colors = []; // ["c"] is color for v_i
     };
 
     this.copy = function() {
@@ -41,6 +42,9 @@ function Linkage() {
         that.angles = _.map(this.angles, function(a) {
             return {i: a.i, j: a.j, k: a.k};
         });
+        that.colors = _.map(this.colors, function(c) {
+            return c;
+        });
         return that;
     };
 
@@ -54,7 +58,7 @@ function Linkage() {
 
         this.labels.splice(i0, 1);
         this.labelCount += 1;
-
+        this.colors.splice(i0,1);
         this.edges = $.map(this.edges, function(e) {
             if (e.i != i0 && e.j != i0)
                 return {i: e.i < i0 ? e.i : e.i-1,
