@@ -93,15 +93,17 @@ function Linkage() {
                 return k;
         }
     };
-
+    // TODO: Check result of this.edges after merge
     this.mergeVertices = function(i0, i1) {
+        console.log(this.vertices);
         var dist = this.vertexDist2(this.vertices[i0][0], this.vertices[i0][1], i1);
+        if (dist > MAX_OVERLAP_OFFSET) return;
         console.log(dist);
         for (let index = 0; index<this.edges.length; index++) {
             let {i, j} = this.edges[index];
             let updatedEdge = null;
-            if (i == i1) updatedEdge = {i: i0, j: j};
-            else if(j == i1) updatedEdge = {i: i, j: i0};
+            if (i == i1 && j != i0) updatedEdge = {i: i0, j: j};
+            else if(j == i1 && i != i0) updatedEdge = {i: i, j: i0};
 
             if (updatedEdge) {
                 this.edges[index] = updatedEdge;

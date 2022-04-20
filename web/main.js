@@ -64,6 +64,15 @@ function display() {
         buttonPane.style.display = "flex";
         buttonPane.style.justifyContent = "space-evenly";
 
+        
+        let mergeButton = document.createElement("button");
+        mergeButton.innerHTML = "Auto-merge";
+        mergeButton.height = "50";
+        mergeButton.onclick = function () {
+            keypress('a');
+        };
+        buttonPane.appendChild(mergeButton);
+
         let fixButton = document.createElement("button");
         fixButton.innerHTML = "Fix Vertex";
         fixButton.height = "50";
@@ -293,7 +302,9 @@ function mouseright(x, y) {
     display();
 }
 
-function keypress(key) {
+const delay = ms => new Promise(res => setTimeout(res, ms));
+
+async function keypress(key) {
     // var k = key;
     // function myFunction(key2){
     //     k = key2;
@@ -308,15 +319,21 @@ function keypress(key) {
     }
 
     else if (key == 'a') {
-        console.log("Merging vertices...");
+        // await delay(5000);
+        // link.mergeVertices(0,1);
+        // update();
+        // console.log("Merging vertices...");
         const midpoint = ([x1, y1], [x2, y2]) => [(x1 + x2) / 2, (y1 + y2) / 2];
         var mid = midpoint(link.vertices[3], link.vertices[4])
         mouseright(mid[0], mid[1]);
         mouseleft(link.vertices[3][0], link.vertices[3][1]);
-        setTimeout(function() {
+        setTimeout(() => {
             link.mergeVertices(3, 4);
+            mouseright(mid[0], mid[1]);
+            update();
         }, 5000);
-        update();
+        
+        // idle();
     }
 
     else if (key == 't' && curVertex >= 0) {
@@ -420,43 +437,48 @@ var resized = false;
 function idle() {
     if (attractor && curVertex >= 0 && allVelocities.length && link.fixed.indexOf(curVertex) < 0) {
         var num = numeric;
-        var velocity0 = num.sub(attractor, link.vertices[curVertex]);
+        for (const currentVertex of [curVertex, link.vertices.length-1]) {
+        
+            var velocity0 = num.sub(attractor, link.vertices[currentVertex]);
+            
+            if (num.norm2Squared(velocity0) < ATTRACT_DIST2) { // turn off attractor
+                attractor = undefined;
+                display();
+                break;
+            }
+            else {
+                velocity0 = num.mul(VELOCITY_MAG, normalized(velocity0));
+                _.each(allVelocities, function(velocities) {
+                    var velocity = velocities[currentVertex];
+                    var d = num.norm2Squared(velocity);
+                    if (d < 1e-9) return;
 
-        if (num.norm2Squared(velocity0) < ATTRACT_DIST2) { // turn off attractor
-            attractor = undefined;
-            display();
+                    var c = num.dot(velocity0, velocity) / d;
+                    if (c < -VELOCITY_COEFF) c = -VELOCITY_COEFF;
+                    if (c > VELOCITY_COEFF) c = VELOCITY_COEFF;
+
+                    velocity0 = num.sub(velocity0, num.mul(c, velocity));
+
+                    for (var i in link.vertices) {
+                        link.vertices[i] = num.add(link.vertices[i],
+                                                num.mul(c, velocities[i]));
+                    }
+                });
+
+                _.each(tracks, function(track, i) {
+                    var last = track[track.length - 1];
+                    if (!last || link.vertexDist2(last[0], last[1], i) > TRACK_DIST2) {
+                        track.push(link.vertices[i]);
+
+                        if (track.length > TRACK_LENGTH)
+                            track.splice(0, track.length - TRACK_LENGTH);
+                    }
+                });
+
+                update();
+            }
         }
-        else {
-            velocity0 = num.mul(VELOCITY_MAG, normalized(velocity0));
-            _.each(allVelocities, function(velocities) {
-                var velocity = velocities[curVertex];
-                var d = num.norm2Squared(velocity);
-                if (d < 1e-9) return;
-
-                var c = num.dot(velocity0, velocity) / d;
-                if (c < -VELOCITY_COEFF) c = -VELOCITY_COEFF;
-                if (c > VELOCITY_COEFF) c = VELOCITY_COEFF;
-
-                velocity0 = num.sub(velocity0, num.mul(c, velocity));
-
-                for (var i in link.vertices) {
-                    link.vertices[i] = num.add(link.vertices[i],
-                                               num.mul(c, velocities[i]));
-                }
-            });
-
-            _.each(tracks, function(track, i) {
-                var last = track[track.length - 1];
-                if (!last || link.vertexDist2(last[0], last[1], i) > TRACK_DIST2) {
-                    track.push(link.vertices[i]);
-
-                    if (track.length > TRACK_LENGTH)
-                        track.splice(0, track.length - TRACK_LENGTH);
-                }
-            });
-
-            update();
-        }
+        
     }
     else if (resized) {
         display();
