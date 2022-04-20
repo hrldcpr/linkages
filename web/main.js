@@ -170,7 +170,9 @@ function display() {
         let selectBtn = document.getElementById("color-select-btn"); 
         selectBtn.onclick = function () {
             color = colorBtn.value;
-            link.colors[curVertex] = colorBtn.value;
+            for (const curVertex of curVertices) {
+                link.colors[curVertex] = colorBtn.value;
+            }
             createMap();
             display();
         };
@@ -252,7 +254,7 @@ function display() {
         if (curVertices.indexOf(i) >= 0 || !(view & 2)) {
             c.fillStyle = link.colors[i];
             c.lineWidth = 2;
-            if(curVertex!=i)
+            if(curVertices.indexOf(i) < 0)
                 c.strokeStyle = "black";
             else{
                 c.strokeStyle = "red";
