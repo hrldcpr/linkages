@@ -8,9 +8,12 @@ var view = 0;
 var VIEWS = 8;
 var info = 0;
 var label = 0
+var color = "black";
 var INFOS = 2;
 var createButton = 1;
 var savedCount = 3;
+let shapeBool = true;
+let map = new Map();
 
 function reset() {
     allVelocities = [];
@@ -18,6 +21,7 @@ function reset() {
     curEdge = undefined;
     attractor = undefined;
     tracks = {};
+    map = new Map();
 }
 
 var VELOCITY_COEFF = 1;
@@ -44,8 +48,19 @@ function strokeLine(c, u, v) {
 }
 
 function fillPoint(c, v) {
-    c.fillRect(v[0] - VERTEX_SIZE/2, v[1] - VERTEX_SIZE/2,
+    if(shapeBool){
+        c.beginPath();
+        c.rect(v[0] - VERTEX_SIZE/2, v[1] - VERTEX_SIZE/2,
                VERTEX_SIZE, VERTEX_SIZE);
+        c.fill();
+        c.stroke();
+        }
+    else{
+        c.beginPath();
+        c.arc(v[0] , v[1] , VERTEX_SIZE/2, 0, 2 * Math.PI, false);
+        c.fill();
+        c.stroke();
+    }
 }
 
 function colorComponent(x) {
@@ -83,6 +98,7 @@ function display() {
         delButton.innerHTML = "Delete Vertex";
         delButton.onclick = function () {
             keypress('d');
+            
         };
         buttonPane.appendChild(delButton);
 
@@ -139,6 +155,17 @@ function display() {
         buttonPane.appendChild(importButton);
 
         document.body.appendChild(buttonPane);
+
+        let colorBtn = document.getElementById("color-btn"); 
+
+        let selectBtn = document.getElementById("color-select-btn"); 
+        selectBtn.onclick = function () {
+            color = colorBtn.value;
+            link.colors[curVertex] = colorBtn.value;
+            createMap();
+            display();
+        };
+        
         createButton = 0;
     }
 
@@ -160,6 +187,7 @@ function display() {
         if (link.labels.length < link.vertices.length) {
             for(let j = link.labels.length; j < link.vertices.length; j++){
                 link.labels[j] = String.fromCharCode(65 + j + link.labelCount);
+                
             }
         }
 
@@ -169,7 +197,7 @@ function display() {
             c.fillText(link.labels[i], x + 8, y + 12);
         }
     }
-
+    createMap();
     _.each(link.edges, function(e, k) {
         if (k == curEdge) c.strokeStyle = colorString(1, 0.3, 1);
         else c.strokeStyle = colorString(1, 0.3, 0);
@@ -213,7 +241,19 @@ function display() {
         var r = link.fixed.indexOf(i) != -1 ? 1 : 0;
         var g = i in tracks ? 1 : 0;
         if (i == curVertex || !(view & 2)) {
-            c.fillStyle = colorString(r, g, b);
+            c.fillStyle = link.colors[i];
+            c.lineWidth = 2;
+            if(curVertex!=i)
+                c.strokeStyle = "black";
+            else{
+                c.strokeStyle = "red";
+                
+            }
+
+            if(link.fixed.indexOf(i) == -1)
+                shapeBool = false;
+            else
+                shapeBool = true;
             fillPoint(c, v);
         }
     });
@@ -222,8 +262,34 @@ function display() {
         c.fillStyle = colorString(0.5, 0.5, 0.5)
         fillPoint(c, attractor);
     }
+    
 }
+function createMap(){
+    map.clear();
+    for(let j = 0; j < link.colors.length; j++){
+        if(!map.has(link.colors[j])){
+            let l = [];
+            map.set(link.colors[j], l);
+        }
+        let n = map.get(link.colors[j]);
+        n.push(link.labels[j]);
+        
+        map.set(link.colors[j],n);
+    }
+    let table = '<table border="1">';
+    table += `<tr><th>Color</th><th>Labels</th></tr>`;
+    
+    map.forEach((values , keys) => {
 
+        table = table + `<tr>`;
+        table = table + `<td style="color:${keys}">&#9635</td>`;
+        table = table + `<td>${values}</td>`;
+        table += `</tr>`;
+        
+        });
+    table += "</table>";
+    document.getElementById("color-table").innerHTML = table;
+}
 function pick(x, y) {
     var i = link.findVertex(x, y);
     if (i >= 0 && link.vertexDist2(x, y, i) < PICK_DIST2)
@@ -266,6 +332,7 @@ function mouseleft(x, y) {
     }
     else {
         link.vertices.push([x, y]);
+        link.colors.push("black");
         update();
     }
 }
@@ -318,6 +385,7 @@ function keypress(key) {
     }
 
     else if (key == 'd') {
+        
         if (curVertex >= 0) {
             if (curVertex in tracks) {
                 var oldTracks = tracks;
@@ -337,6 +405,7 @@ function keypress(key) {
             curEdge = undefined;
             update();
         }
+        
     }
 
     else if(key == 'q' && curVertex >=0) {
@@ -379,14 +448,17 @@ function keypress(key) {
         for (var i=0; i<link.vertices.length; i++) {
             verticesCopy.push([...link.vertices[i]]);
         }
+
         var linkageCopy = {
             vertices: verticesCopy,
             labels: [...link.labels],
             fixed: [...link.fixed],
             edges: [...link.edges],
             angles: [...link.angles],
+            colors: [...link.colors],
             labelCount: link.labelCount,
         }
+        console.log(linkageCopy);
 
         download(linkageName, JSON.stringify(linkageCopy));
     }
@@ -405,6 +477,7 @@ function keypress(key) {
               link.fixed = intern.fixed;
               link.edges = intern.edges;
               link.angles = intern.angles;
+              link.colors = intern.colors;
               link.labelCount = intern.labelCount;
               update();
             };
