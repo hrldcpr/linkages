@@ -1,3 +1,5 @@
+const MAX_OVERLAP_OFFSET = 10;
+
 function Linkage() {
     // representation of linked rigid bars
 
@@ -95,6 +97,43 @@ function Linkage() {
                 return k;
         }
     };
+    
+    // i0 must be less than i1 for valid arguments
+    this.mergeVertices = function(i0, i1) {
+        i0 = Math.min(i0, i1);
+        i1 = Math.max(i0, i1);
+        var dist = this.vertexDist2(this.vertices[i0][0], this.vertices[i0][1], i1);
+        if (!dist || Math.sqrt(dist) > MAX_OVERLAP_OFFSET) return false;
+        for (let index = 0; index<this.edges.length; index++) {
+            let {i, j} = this.edges[index];
+            let updatedEdge = null;
+            if (i == i1 && j != i0) updatedEdge = {i: i0, j: j};
+            else if(j == i1 && i != i0) updatedEdge = {i: i, j: i0};
+
+            if (updatedEdge) {
+                this.edges[index] = updatedEdge;
+            }
+        }
+        for (let index = 0; index<this.angles.length; index++) {
+            let {i, j, k} = this.angles[index];
+            let updatedAngle = null;
+            if (i == i1) updatedAngle = {i: i0, j: j, k: k};
+            else if(j == i1) updatedAngle = {i: i, j: i0, k: k};
+            else if(k == i1) updatedAngle = {i: i, j: j, k: i0};
+
+            if (updatedAngle) {
+                this.angles[index] = updatedAngle;
+            }
+        }
+        var isFixed = this.fixed.includes(i0) || this.fixed.includes(i1);
+        if (isFixed) {
+            if (!this.fixed.includes(i0)) {
+                this.fixed.push(i0);
+            }
+        }
+        this.removeVertex(i1);
+        return true;
+    }
 
     this.vertexDist2 = function(x, y, i) {
         return num.norm2Squared(num.sub([x, y], this.vertices[i]));
