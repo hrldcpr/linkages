@@ -64,13 +64,13 @@ function fillPoint(c, v) {
 }
 function fillAttractor(c, v){
     c.beginPath();
-    c.moveTo(v[0], v[1]);
-    c.lineTo(v[0]+10, v[1]+10);
+    c.moveTo(v[0]-5, v[1]-5);
+    c.lineTo(v[0]+5, v[1]+5);
     c.strokeStyle = 'red';
     c.stroke();
     c.beginPath();
-    c.moveTo(v[0]+10, v[1]);
-    c.lineTo(v[0], v[1]+10);
+    c.moveTo(v[0]+5, v[1]-5);
+    c.lineTo(v[0]-5, v[1]+5);
     c.strokeStyle = 'red'
     c.stroke()
 }
